@@ -1,0 +1,47 @@
+openapi: 3.0.3
+info:
+  title: Set UserName API
+  version: "1"
+paths:
+  /api/setMyUserName:
+    post:
+      summary: Allows the user to change their username.
+      operationId: setMyUserName
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: The unique ID of the user.
+                newUserName:
+                  type: string
+                  description: The new desired username.
+      responses:
+        '200':
+          description: Username successfully changed.
+          content:
+            application/json:
+              example:
+                message: Username has been successfully changed.
+        '400':
+          description: Bad request. The new username is already in use. Please choose another.
+          content:
+            application/json:
+              example:
+                error: The new username is already in use. Please choose another.
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              example:
+                error: User not found.
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              example:
+                error: Internal Server Error.

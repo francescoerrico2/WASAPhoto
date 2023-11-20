@@ -1,0 +1,47 @@
+openapi: 3.0.3
+info:
+  title:  Like Photo API
+  version: "1"
+paths:
+  /api/likePhoto:
+    post:
+      summary: Like a Photo.
+      operationId: likePhoto
+      requestBody:
+        required: true
+        content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              userId:
+                type: String
+                description: The unique ID of the user liking the photo.
+              photoId:
+                type: string
+                description: The ID of the photo to be liked.
+      responses:
+        '200':
+          description: Photo liked successfully.
+          content:
+            application/json:
+              example:
+                message: Photo liked successfully.
+        '400':
+          description: Bad request. Invalid input or missing required parameters.
+          content:
+            application/json:
+              example:
+                error: Bad request. Invalid input or missing required parameters.
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              example:
+                error: User not found.
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              example:
+                error: Internal Server Error.

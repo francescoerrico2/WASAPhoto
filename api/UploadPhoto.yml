@@ -1,0 +1,49 @@
+openapi: 3.0.3
+info:
+  title: Upload Photo API
+  versione: "1"
+paths:
+  /api/uploadPhoto:
+    post:
+      summary: Upload a photo
+      operationId: uploadPhoto
+      requestBody:
+        required: true
+        content: 
+          multipart/from-data: 
+            schema:
+              type: object
+              properties:
+                  userId:
+                    type: string
+                    description: The unique ID of the user uploading the photo
+                  photo:
+                    type: string
+                    format: binary
+                    description: the photo file to be upload
+      responses:
+        '201':
+          description:  Photo uploaded seccessfully
+          content:
+            application/json:
+              example:
+                massage: Photo has been uploaded successfully
+        '400':
+          description:  Bad request. Invalid input or missing required parametres
+          content:
+            application/json:
+              example:
+                massage: Bad request. Invalid input or missing required parametres
+        '404':
+          description:  User not found
+          content:
+            application/json:
+              example:
+                massage: User not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              example:
+                massage:  Internal Server Error
+  

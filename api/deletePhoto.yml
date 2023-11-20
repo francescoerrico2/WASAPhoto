@@ -1,0 +1,37 @@
+openapi: 3.0.3
+info:
+  title: Delete Photo API
+  versione: "1"
+paths:
+  /api/deletePhoto:
+    delete:
+      summary: Delete a photo
+      operationID: deletePhoto
+      parameters:
+        - name: userId
+          in: path
+          description: The unique ID of the user deleting the photo
+          required: true
+          schema:
+            type: string
+        - name: photoId
+          in: query
+          description: The ID of the photo to be deleted
+          required: true
+          schema:
+            type: string
+    responses:
+        '204':
+          description:  Photo deleted successfully
+        '400':
+          description:  Photo not found 
+          content:
+            application/json:
+              example:
+                massage: Photo not found
+        '500':
+          description:  Internal Server Error
+          content:
+            application/json:
+              example:
+                massage: Internal Server Error

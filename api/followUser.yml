@@ -1,0 +1,47 @@
+openapi: 3.0.3
+info:
+  title: Follow User API
+  version: "1"
+paths:
+  /api/followUser:
+    post:
+      summary: Follow another user.
+      operationId: followUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                followerId:
+                  type: string
+                  description: The unique ID of the user who wants to follow another user.
+                followingId:
+                  type: string
+                  description: The unique ID of the user to be followed.
+      responses:
+        '200':
+          description: User followed successfully.
+          content:
+            application/json:
+              example:
+                message: User followed successfully.
+        '400':
+          description: Bad request. Invalid input or missing required parameters.
+          content:
+            application/json:
+              example:
+                error: Bad request. Invalid input or missing required parameters.
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              example:
+                error: User not found.
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              example:
+                error: Internal Server Error.
