@@ -1,0 +1,922 @@
+openapi: 3.0.3
+info:
+  title: WASAphoto API
+  description: |
+    This is the API for the WASAphoto 
+  version: 0.0.1
+
+tags: 
+  - name: "login"
+    description: Endpoint that manages the login
+  - name: "search"
+    description: Endpoint that manages search
+  - name: "user"
+    description: Endpoint that manages users
+  - name: "ban"
+    description: Endpoint that manages banned users
+  - name: "followers"
+    description: Endpoint that manages followers
+  - name: "stream"
+    description: Endpoint that manages stream
+  - name: "photo"
+    description: Endpoint that manages photos
+  - name: "comments"
+    description: Endpoint that manages comments
+  - name: "likes"
+    description: Endpoint that manages likes
+
+paths:
+  /login:
+    post:
+      tags: ["login"]
+      summary: Logs in the user
+      description: |-
+        If the user does not exist, it will be created,
+        and an identifier is returned.
+        If the user exists, the user identifier is returned.
+      operationId: doLogin
+      requestBody:
+        description: User details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/user_login"
+      responses:
+        '201':
+          description: User log-in action successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  identifier:
+                      type: string
+                      example: "abcdef012345"   
+  /users:
+    get:
+      tags: ["search"]
+      summary: Get user profile information.
+      operationId: getUserProfile
+      parameters:
+        - $ref: "#/components/parameters/query_id"
+      responses:
+        '200':
+          description: User profile retrieved successfully.
+          content:
+            application/json:
+              example:
+                userId: "192839"
+                username: "Mario_Rossi"
+                photos:
+                  - photosId: "001"
+                    uploadDataTime: "2023-01-01T00:00:01Z"
+                    likes: 10
+                    comments: 3
+                  - photosId: "002"
+                    uploadDataTime: "2023-03-03T09:00:01Z"
+                    likes: 3
+                    comments: 0
+                totalPhotos: 2
+                followers: 15
+                following: 2  
+        '400':
+          description: Bad request. Invalid input or missing required parameters.
+          content:
+            application/json:
+              example:
+                error: Bad request. Invalid input or missing required parameters.
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              example:
+                error: User not found.
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              example:
+                error: Internal Server Error.
+  /users/{id}:
+    
+    get:
+      tags: ["user"]
+      summary: Retrieves all the info of a profile
+      description: Allows the user to obtain a profile complete info (can't be banned by the profile owner)
+      operationId: getProfile
+      parameters: 
+        - $ref: "#/components/parameters/identifier"
+      responses:
+        '200':
+          description: User profile retrieved successfully.
+          content:
+            application/json:
+              example:
+                userId: "192839"
+                username: "Mario_Rossi"
+                photos:
+                  - photoId: "001"
+                    uploadDateTime: "2023-01-01T00:00:01Z"
+                    likes: 10
+                    comments: 3
+                  - photoId: "002"
+                    uploadDateTime: "2023-03-03T09:00:01Z"
+                    likes: 3
+                    comments: 0
+                totalPhotos: 2
+                followers: 15
+                following: 2  
+        '400':
+          description: Bad request. Invalid input or missing required parameters.
+          content:
+            application/json:
+              example:
+                error: Bad request. Invalid input or missing required parameters.
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              example:
+                error: User not found.
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              example:
+                error: Internal Server Error.
+    put:
+      tags: ["user"]
+      summary: Allows the user to change their username.
+      operationId: setMyUserName
+      parameters: 
+        - $ref: "#/components/parameters/identifier"
+      responses:
+        '200':
+          description: Username successfully changed.
+          content:
+            application/json:
+              example:
+                message: Username has been successfully changed.
+        '400':
+          description: Bad request. The new username is already in use. Please choose another.
+          content:
+            application/json:
+              example:
+                error: The new username is already in use. Please choose another.
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              example:
+                error: User not found.
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              example:
+                error: Internal Server Error.
+  /users/{id}/banned_users/{banned_user_id}:
+    put:
+      tags: ["ban"]
+      summary: Ban un user.
+      operationId: banUser
+      parameters:
+        - $ref: "#/components/parameters/banned_user_id"
+        - $ref: '#/components/parameters/identifier'
+      responses:
+        '200':
+          description: User banned successfully.
+          content:
+            application/json:
+              example:
+                message: User banned successfully.
+        '400':
+          description: Bad request. Invalid input or missing required parameters.
+          content:
+            application/json:
+              example:
+                error: Bad request. Invalid input or missing required parameters.
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              example:
+                error: User not found.
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              example:
+                error: Internal Server Error.
+    delete:
+      tags: ["ban"]
+      summary: Unban un user.
+      operationId: unbanUser
+      parameters:
+        - $ref: "#/components/parameters/banned_user_id"
+        - $ref: '#/components/parameters/identifier'
+      responses:
+        '200':
+          description: User banned successfully.
+          content:
+            application/json:
+              example:
+                message: User banned successfully.
+        '400':
+          description: Bad request. Invalid input or missing required parameters.
+          content:
+            application/json:
+              example:
+                error: Bad request. Invalid input or missing required parameters.
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              example:
+                error: User not found.
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              example:
+                error: Internal Server Error.
+  /users/{id}/followers/{follower_id}:
+    put:
+      tags: ["followers"]
+      summary: Follow another user.
+      operationId: followUser
+      parameters:
+        - $ref: "#/components/parameters/follower_id"
+        - $ref: '#/components/parameters/identifier'
+      responses:
+        '200':
+          description: User followed successfully.
+          content:
+            application/json:
+              example:
+                message: User followed successfully.
+        '400':
+          description: Bad request. Invalid input or missing required parameters.
+          content:
+            application/json:
+              example:
+                error: Bad request. Invalid input or missing required parameters.
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              example:
+                error: User not found.
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              example:
+                error: Internal Server Error.
+    delete:
+      tags: ["followers"]
+      summary: Unfollow un user.
+      operationId: unfollowUser
+      parameters:
+        - $ref: "#/components/parameters/follower_id"
+        - $ref: '#/components/parameters/identifier'
+      responses:
+        '200':
+          description: User unfollowed successfully.
+          content:
+            application/json:
+              example:
+                message: User unfollowed successfully.
+        '400':
+          description: Bad request. Invalid input or missing required parameters.
+          content:
+            application/json:
+              example:
+                error: Bad request. Invalid input or missing required parameters.
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              example:
+                error: User not found.
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              example:
+                error: Internal Server Error.
+  /users/{id}/home:  
+    get:
+      tags: ["stream"]
+      summary: Get the user's photo stream.
+      operationId: getMyStream
+      parameters: 
+        - $ref: '#/components/parameters/identifier'
+              
+      responses:
+        '200':
+          description: User's photo stream retrieved successfully.
+          content:
+            application/json:
+              example:
+                  - photosId: "001"
+                    uploadDataTime: "2023-01-01T00:00:01Z"
+                    likes: 10
+                    comments: 3
+                  - photosId: "002"
+                    uploadDataTime: "2023-03-03T09:00:01Z"
+                    likes: 3
+                    comments: 0
+        '400':
+          description: Bad request. Invalid input or missing required parameters.
+          content:
+            application/json:
+              example:
+                error: Bad request. Invalid input or missing required parameters.
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              example:
+                error: User not found.
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              example:
+                error: Internal Server Error.
+  /users/{id}/photos:    
+    post:
+      tags: ["photo"]
+      summary: Upload a photo
+      operationId: uploadPhoto
+      parameters: 
+        - $ref: '#/components/parameters/identifier'
+      responses:
+        '201':
+          description:  Photo uploaded seccessfully
+          content:
+            application/json:
+              example:
+                massage: Photo has been uploaded successfully
+        '400':
+          description:  Bad request. Invalid input or missing required parametres
+          content:
+            application/json:
+              example:
+                massage: Bad request. Invalid input or missing required parametres
+        '404':
+          description:  User not found
+          content:
+            application/json:
+              example:
+                massage: User not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              example:
+                massage:  Internal Server Error
+  /users/{id}/photos/{photo_id}:
+    get:
+      tags: ["photo"]
+      summary: Downloads a photo
+      description: A user can access a photo if he/she's the owner or if he/she wasn't banned by the owner
+      operationId: getPhoto
+      parameters: 
+        - $ref: '#/components/parameters/identifier'
+        - $ref: '#/components/parameters/photo_id'
+      responses:
+        '200':
+          description: Photo information retrieved successfully.
+          content:
+            application/json:
+              example:
+                photoId: "789"
+                uploadDateTime: "2023-01-01T12:00:00Z"
+                likes: 10
+                comments: 2
+        '400':
+          description: Bad request. Invalid input or missing required parameters.
+          content:
+            application/json:
+              example:
+                error: Bad request. Invalid input or missing required parameters.
+        '404':
+          description: Photo not found.
+          content:
+            application/json:
+              example:
+                error: Photo not found.
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              example:
+                error: Internal Server Error.
+    delete:
+      tags: ["photo"]
+      summary: Delete a photo
+      operationId: deletePhoto
+      parameters: 
+        - $ref: '#/components/parameters/identifier'
+        - $ref: '#/components/parameters/photo_id'
+      responses:
+        '204':
+          description:  Photo deleted successfully
+        '400':
+          description:  Photo not found 
+          content:
+            application/json:
+              example:
+                massage: Photo not found
+        '500':
+          description:  Internal Server Error
+          content:
+            application/json:
+              example:
+                massage: Internal Server Error
+  /users/{id}/photos/{photo_id}/comments:
+    post:
+      tags: ["comments"]
+      summary: Add a comment to a photo.
+      operationId: commentPhoto
+      parameters: 
+        - $ref: '#/components/parameters/identifier'
+        - $ref: '#/components/parameters/photo_id'
+        
+      responses:
+        '200':
+          description: Comment added successfully.
+          content:
+            application/json:
+              example:
+                message: Comment added successfully.
+        '400':
+          description: Bad request. Invalid input or missing required parameters.
+          content:
+            application/json:
+              example:
+                error: Bad request. Invalid input or missing required parameters.
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              example:
+                error: User not found.
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              example:
+                error: Internal Server Error.
+  /users/{id}/photos/{photo_id}/comments/{comment_id}:
+    delete:
+      tags: ["comments"]
+      summary: Remove a comment from a photo.
+      operationId: uncommentPhoto
+      parameters: 
+        - $ref: '#/components/parameters/identifier'
+        - $ref: '#/components/parameters/photo_id'
+        - $ref: '#/components/parameters/comment_id'
+      responses:
+        '200':
+          description: Comment removed successfully.
+          content:
+            application/json:
+              example:
+                message: Comment removed successfully.
+        '400':
+          description: Bad request. Invalid input or missing required parameters.
+          content:
+            application/json:
+              example:
+                error: Bad request. Invalid input or missing required parameters.
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              example:
+                error: User not found.
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              example:
+                error: Internal Server Error.
+  /users/{id}/photos/{photo_id}/likes/{like_id}:
+    put:
+      tags: ["likes"]
+      summary: Like a Photo.
+      operationId: likePhoto
+      parameters: 
+        - $ref: '#/components/parameters/identifier'
+        - $ref: '#/components/parameters/photo_id'
+        - $ref: '#/components/parameters/like_id'
+      responses:
+        '200':
+          description: Photo liked successfully.
+          content:
+            application/json:
+              example:
+                message: Photo liked successfully.
+        '400':
+          description: Bad request. Invalid input or missing required parameters.
+          content:
+            application/json:
+              example:
+                error: Bad request. Invalid input or missing required parameters.
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              example:
+                error: User not found.
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              example:
+                error: Internal Server Error.
+    delete:
+      tags: ["likes"]
+      summary: Remove a like from a Photo.
+      operationId: unlikePhoto
+      parameters: 
+        - $ref: '#/components/parameters/identifier'
+        - $ref: '#/components/parameters/photo_id'
+        - $ref: '#/components/parameters/like_id'
+      responses:
+        '200':
+          description: Like removed  successfully.
+          content:
+            application/json:
+              example:
+                message: Like removed  successfully.
+        '400':
+          description: Bad request. Invalid input or missing required parameters.
+          content:
+            application/json:
+              example:
+                error: Bad request. Invalid input or missing required parameters.
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              example:
+                error: User not found.
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              example:
+                error: Internal Server Error.
+components:
+  parameters:
+    identifier:
+      name: id
+      in: path
+      description: A user's unique id
+      required: true
+      schema:
+        description: String between 3-16 characters
+        type: string
+        pattern: '^.*?$'
+        example: ANtonio88
+        minLength: 3
+        maxLength: 16
+        readOnly: true       
+    photo_id:
+      name: photo_id
+      in: path
+      description: A photo unique identifier
+      required: true
+      schema: 
+        description: Int64 between 0-9999
+        type: integer
+        format: int64
+        minimum: 0
+        maximum: 9999
+        example : 345
+        readOnly: true
+    comment_id:
+      name: comment_id
+      in: path
+      description: A comment unique identifier
+      required: true
+      schema:
+        $ref: "#/components/schemas/comment_identifier/properties/comment_id"
+      example: 113    
+    follower_id:
+      name: follower_id
+      in: path
+      description: A follower's unique identifier. It's exactly his *identifier*
+      required: true
+      schema: 
+        $ref: "#/components/schemas/user_nickname/properties/nickname"
+      example: "Mariorossi"      
+    like_id:
+      name: like_id
+      in: path
+      description: A like unique identifier. It's exactly the *identifier* of the user that liked the photo
+      required: true
+      schema: 
+        $ref: "#/components/schemas/user_nickname/properties/nickname"
+      example: "Stefanobianchi"    
+    banned_user_id:
+      name: banned_user_id
+      in: path
+      description: A banned user unique identifier. It's exactly the *identifier* of the user
+      required: true
+      schema:
+        $ref: "#/components/schemas/user_nickname/properties/nickname"
+      example: "Lazio33" 
+    query_id:
+      name: id
+      in: query
+      description: id of the user that is being searched
+      schema:
+        description: usual *identifier*
+        type: string
+        pattern: '^.*?$'
+        minLength: 3
+        maxLength: 16
+        example: "Luis64"
+      example: "luigi64"
+
+  schemas:
+    user_nickname:
+      description: It's a user's nickname
+      type: object
+      properties:
+        nickname:
+          description: Any string between 3-16 characters
+          type: string
+          minLength: 3
+          maxLength: 16
+          pattern: '^.*?$'
+          example: "Pizzafritta?"
+      example:
+        nickname: "HoFame44"  
+    complete_user:
+      description: Contains both *unique identifier and nickname of a user
+      type: object
+      properties:
+        user_id:
+          $ref: "#/components/schemas/user_nickname/properties/nickname"
+        nickname:
+          $ref: "#/components/schemas/user_nickname/properties/nickname"
+      example:
+        user_id: "Gem99"
+        nickname: "Gemitaiz"
+    comment_identifier:
+      description: It's a comment *unique* id
+      type: object
+      properties:
+        comment_id:
+          description: Any number between 0-9999
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 9999
+          readOnly: true
+          example: 965
+      example:
+        comment_id: 965
+    comment:
+      description: A user's comment contains the text of the comment and the *identifier* of who commented
+      type: object
+      properties:
+        user_id: 
+          $ref: "#/components/schemas/user_nickname/properties/nickname"
+        nickname: 
+          $ref: "#/components/schemas/user_nickname/properties/nickname"
+        comment:
+          type: string
+          minLength: 1
+          maxLength: 30
+          pattern: '^.*?$'
+          example: OK my bruh
+          description: String value of the comment
+        comment_id:
+          $ref: "#/components/schemas/comment_identifier/properties/comment_id"
+      example:
+        user_id: "Banana33"
+        nickname: "BAnana33"
+        photo_id: 873
+        comment: "It's Fantastic!"    
+        comment_id: 16
+    raw_photo:
+      description: Image content
+      type: object
+      properties:
+        photo_data:
+          description: "Raw data of the photo"
+          type: string
+          minLength: 0
+          maxLength: 100
+          format: binary
+          example: "010110010"
+      example: 
+        photo_data: "010110010"
+    photo:
+      description: Contains the essential info of a photo
+      type: object
+      properties:
+        comments:
+          description: Array of comments of a photo
+          type: array
+          minItems: 0
+          maxItems: 9999
+          items:
+            $ref: "#/components/schemas/comment"
+          example:
+            - comments:
+              - user_id: "mije"
+                nickname: "reSAF"
+                photo_id: 5668
+                comment: "bella foto!"
+                comment_id: 2
+        likes:
+          description:  Array of users that liked a photo
+          type: array
+          minItems: 0
+          maxItems: 9999
+          items:
+            $ref: "#/components/schemas/complete_user"
+          example: 
+            -  user_id: "Bro9999"
+               nickname: "YourBro"
+            -  user_id: "brrrrr"
+               nickname: "rkomi"
+        date:
+          description: Date and time of upload.
+          type: string
+          format: date-time
+          example: 2017-07-21T17:32:28Z
+          readOnly: true
+        photo_id:
+          $ref: "#/components/schemas/comment_identifier/properties/comment_id"
+        owner:
+          $ref: "#/components/schemas/user_nickname/properties/nickname"
+      example: 
+        comments:
+          - user_id: "miky"
+            nickname: "ErMike"
+            photo_id: 3821
+            comment: "bella foto!"
+            comment_id: 99
+        likes:
+          - user_id: "miky"
+            nickname: "ErMike"
+        date: 2017-07-21T17:32:28Z
+        photo_id: 3821
+        owner: "Mariucc"
+    photos:
+      description: Represents a list of photos
+      type: object
+      properties:
+        photos_list:
+          description: List of photos
+          type: array
+          minItems: 0
+          maxItems: 10
+          items:
+            $ref: "#/components/schemas/photo"
+          example:
+            - comments:
+                - user_id: "donatello"
+                  nickname: "donatello99"
+                  photo_id: 8321
+                  comment: "wow, nice"
+                  comment_id: 7
+                - user_id: "raffaello"
+                  nickname: "raffaello99"
+                  photo_id: 8321
+                  comment: "impossible!"
+                  comment_id: 76
+            - likes:
+              - user_id: "donatello"
+                nickname: "donatello99"
+              - user_id: "raffaello"
+                nickname: "raffaello99"
+              date: 2017-07-21T17:32:28Z
+              photo_id: 8321
+              owner: "Sapien"
+              
+            - comments:
+                - user_id: "sfera"
+                  nickname: "noNo"
+                  photo_id: 7836
+                  comment: "bella li"
+                  comment_id: 44
+                - user_id: "tiziano"
+                  nickname: "ferroZ68"
+                  photo_id: 7836
+                  comment: "spaccaaa"
+                  comment_id: 912
+            - likes:
+              - user_id: "sfera"
+                nickname: "ebbasta"
+              - user_id: "tiziano"
+                nickname: "ferro"
+              - user_id: "raffaello"
+                nickname: "raffaello99"
+              date: 2022-11-22T13:10:14Z
+              photo_id: 7836
+              owner: "Nerd99"    
+    users_list:
+      description: List of users found
+      type: object
+      properties:
+        users:
+          description: Array of users with a partial match on the searched nickname
+          type: array
+          minItems: 0
+          maxItems: 10
+          items:
+            $ref: "#/components/schemas/complete_user"
+          example:
+            - user_id: Wario21
+              nickname: marietto21
+            - user_id: Watermelon
+              nickname: cocomeros
+            - user_id: WaveBruh
+              nickname: ondaBro
+            - user_id: WantedMan66
+              nickname: uomoRicercat
+    complete_profile:
+          description: Object containing all the profile info
+          type: object
+          properties:
+          
+            user_id:
+              $ref: "#/components/schemas/user_nickname/properties/nickname"
+              
+            nickname:
+              $ref: "#/components/schemas/user_nickname/properties/nickname"
+              
+            followers:
+              description: Array of followers
+              type: array
+              minItems: 0
+              maxItems: 99
+              items:
+                $ref: "#/components/schemas/complete_user"
+              example:
+                - user_id: "Wario21"
+                  nickname: "warietto21"
+                - user_id: "giulio"
+                  nickname: "Milioo"
+
+            following:
+              description: Array of followed users
+              type: array
+              minItems: 0
+              maxItems: 99
+              items:
+                $ref: "#/components/schemas/complete_user"
+              example:
+                - user_id: "giulio"
+                  nickname: "Milioo"
+                
+            photos:
+              description: Array of photos
+              type: array
+              minItems: 0
+              maxItems: 10
+              items:
+                $ref: "#/components/schemas/photo"
+              example:
+                - comments:
+                  - user_id: "sfera"
+                    nickname: "noNo"
+                    comment: "bella li"
+                    comment_id: 104
+                  - user_id: "tiziano"
+                    nickname: "ferroZ68"
+                    comment: "spaccaaa"
+                    comment_id: 99
+                - likes:
+                  - user_id: "sfera"
+                    nickname: "noNo"
+                  - user_id: "tiziano"
+                    nickname: "ferroZ68"
+                  - user_id: "raffaello"
+                    nickname: "raffaello99"
+                    
+                  date: 2022-11-22T13:10:14Z
+                  photo_id: 7836
+                  owner: "PulpFiction"        
+    user_login:
+      description: Identifier sent by user during the login
+      type: object
+      properties:
+        identifier:
+          $ref: "#/components/schemas/user_nickname/properties/nickname"       
+    login_return:
+      description: Identifier returned after the login
+      type: object
+      properties:
+        identifier:
+          $ref: "#/components/schemas/user_nickname/properties/nickname"
