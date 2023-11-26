@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: WASAphoto API
   description: |
-    This is the API for the WASAphoto 
+    This is the API for WASAphoto made by 1982048
   version: 0.0.1
 
 tags: 
