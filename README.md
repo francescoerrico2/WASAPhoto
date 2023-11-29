@@ -2,7 +2,6 @@
 
 This repository contains the WASAPhoto project
 
-
 ## Project structure
 
 * `cmd/` contains all executables; Go programs here should only do "executable-stuff", like reading options from the CLI/env, etc.
