@@ -1,6 +1,7 @@
 # This is the configuration file for the API service
 # Description of this part is present in the `main.go` file
 
+
 log:
   level: debug
 #  methodname: false
