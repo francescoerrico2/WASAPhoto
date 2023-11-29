@@ -1,5 +1,6 @@
 package yaml
 
+//
 import (
 	"io"
 )
@@ -143,7 +144,7 @@ func yaml_emitter_set_canonical(emitter *yaml_emitter_t, canonical bool) {
 	emitter.canonical = canonical
 }
 
-//// Set the indentation increment.
+// // Set the indentation increment.
 func yaml_emitter_set_indent(emitter *yaml_emitter_t, indent int) {
 	if indent < 2 || indent > 9 {
 		indent = 2
