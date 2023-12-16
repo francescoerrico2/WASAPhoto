@@ -38,11 +38,15 @@ package api
 
 import (
 	"errors"
+	"net/http"
+	"path/filepath"
+
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
 	"github.com/julienschmidt/httprouter"
 	"github.com/sirupsen/logrus"
-	"net/http"
 )
+
+var photoFolder = filepath.Join("/tmp", "media")
 
 // Config is used to provide dependencies and configuration to the New function.
 type Config struct {

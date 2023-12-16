@@ -1,180 +1,108 @@
 package api
 
-import "git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
+import (
+	"time"
 
-type Profile struct {
-	RequestId      uint64 ` json:"requestId"`
-	Id             uint64 `json:"id"`
-	Username       string `json:"username"`
-	FollowersCount int    `json:"followersCount"`
-	FollowingCount int    `json:"followingCount"`
-	PhotoCount     int    `json:"photoCount"`
-	FollowStatus   bool   `json:"followStatus"`
-	BanStatus      bool   `json:"banStatus"`
-	CheckIfBanned  bool   `json:"checkIfBanned"`
-}
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
+)
 
-type User struct {
-	Id       uint64 `json:"id"`
-	Username string `json:"username"`
-}
+// eliminare error
+const INTERNAL_ERROR_MSG = "internal server error"
+const PNG_ERROR_MSG = "file is not a png format"
+const JPG_ERROR_MSG = "file is not a jpg format"
+const IMG_FORMAT_ERROR_MSG = "images must be jpeg or png"
+const INVALID_JSON_ERROR_MSG = "invalid json format"
+const INVALID_IDENTIFIER_ERROR_MSG = "identifier must be a string between 3 and 16 characters"
 
-func (u *User) FromDB(user database.User) {
-	u.Id = user.Id
-	u.Username = user.Username
-}
-
-func (u *User) ToDB() database.User {
-	return database.User{
-		Id:       u.Id,
-		Username: u.Username,
-	}
-}
-
-type PhotoStream struct {
-	Id           uint64 `json:"id"`
-	UserId       uint64 `json:"userId"`
-	File         []byte `json:"file"`
-	Date         string `json:"date"`
-	LikeCount    int    `json:"likeCount"`
-	CommentCount int    `json:"commentCount"`
-}
-
-func (s *PhotoStream) PhotoStreamFromDB(photoStream database.PhotoStream) {
-	s.Id = photoStream.Id
-	s.UserId = photoStream.UserId
-	s.File = photoStream.File
-	s.Date = photoStream.Date
-	s.LikeCount = photoStream.LikeCount
-	s.CommentCount = photoStream.CommentCount
-}
-
-func (s *PhotoStream) PhotoStreamToDB() database.PhotoStream {
-	return database.PhotoStream{
-		Id:           s.Id,
-		UserId:       s.UserId,
-		File:         s.File,
-		Date:         s.Date,
-		LikeCount:    s.LikeCount,
-		CommentCount: s.CommentCount,
-	}
-
-}
-
-type Follow struct {
-	FollowId   uint64 `json:"followId"`
-	FollowedId uint64 `json:"followedId"`
-	UserId     uint64 `json:"userId"`
-}
-
-func (f *Follow) FollowFromDB(follow database.Follow) {
-	f.FollowId = follow.FollowId
-	f.FollowedId = follow.FollowedId
-	f.UserId = follow.UserId
-}
-
-func (f *Follow) FollowToDB() database.Follow {
-	return database.Follow{
-		FollowId:   f.FollowId,
-		FollowedId: f.FollowedId,
-		UserId:     f.UserId,
-	}
-}
-
-type Ban struct {
-	BanId    uint64 `json:"banId"`
-	BannedId uint64 `json:"bannedId"`
-	UserId   uint64 `json:"userId"`
-}
-
-func (b *Ban) BanFromDB(ban database.Ban) {
-	b.BanId = ban.BanId
-	b.BannedId = ban.BannedId
-	b.UserId = ban.UserId
-}
-
-func (b *Ban) BanToDB() database.Ban {
-	return database.Ban{
-		BanId:    b.BanId,
-		BannedId: b.BannedId,
-		UserId:   b.UserId,
-	}
+type JSONErrorMsg struct {
+	Message string `json:"message"`
 }
 
 type Photo struct {
-	Id           uint64 `json:"id"`
-	UserId       uint64 `json:"userId"`
-	File         []byte `json:"file"`
-	Date         string `json:"date"`
-	LikeCount    int    `json:"likeCount"`
-	CommentCount int    `json:"commentCount"`
+	Comments []database.CompleteComment `json:"comments"`
+	Likes    []database.CompleteUser    `json:"likes"`
+	Owner    string                     `json:"owner"`
+	PhotoId  int                        `json:"photo_id"`
+	Date     time.Time                  `json:"date"`
 }
 
-func (p *Photo) PhotoFromDB(photo database.Photo) {
-	p.Id = photo.Id
-	p.UserId = photo.UserId
-	p.File = photo.File
-	p.Date = photo.Date
-	p.LikeCount = photo.LikesCount
-	p.CommentCount = photo.CommentsCount
+type User struct {
+	IdUser string `json:"user_id"`
 }
 
-func (p *Photo) PhotoToDB() database.Photo {
-	return database.Photo{
-		Id:            p.Id,
-		UserId:        p.UserId,
-		File:          p.File,
-		Date:          p.Date,
-		LikesCount:    p.LikeCount,
-		CommentsCount: p.CommentCount,
-	}
+type PhotoId struct {
+	IdPhoto int64 `json:"photo_id"`
 }
 
-type Like struct {
-	LikeId          uint64 `json:"LikeId"`
-	UserIdentifier  uint64 `json:"identifier"`
-	PhotoIdentifier uint64 `json:"photoIdentifier"`
-	PhotoOwner      uint64 `json:"photoOwner"`
-}
-
-func (l *Like) LikeFromDB(like database.Like) {
-	l.LikeId = like.LikeId
-	l.UserIdentifier = like.UserIdentifier
-	l.PhotoIdentifier = like.PhotoIdentifier
-	l.PhotoOwner = like.PhotoOwner
-
-}
-
-func (l *Like) LikeToDB() database.Like {
-	return database.Like{
-		LikeId:          l.LikeId,
-		UserIdentifier:  l.UserIdentifier,
-		PhotoIdentifier: l.PhotoIdentifier,
-		PhotoOwner:      l.PhotoOwner,
-	}
+type Username struct {
+	Username string `json:"username"`
 }
 
 type Comment struct {
-	Id         uint64 `json:"id"`
-	UserId     uint64 `json:"userId"`
-	PhotoId    uint64 `json:"photoId"`
-	PhotoOwner uint64 `json:"photoOwner"`
-	Content    string `json:"content"`
+	Comment string `json:"comment"`
 }
 
-func (c *Comment) CommentFromDB(comment database.Comment) {
-	c.Id = comment.Id
-	c.UserId = comment.UserId
-	c.PhotoId = comment.PhotoId
-	c.Content = comment.Content
+type CommentId struct {
+	IdComment int64 `json:"comment_id"`
 }
 
-func (c *Comment) CommentToDB() database.Comment {
+type CompleteComment struct {
+	IdComment int64  `json:"comment_id"`
+	IdPhoto   int64  `json:"photo_id"`
+	IdUser    string `json:"user_id"`
+	Username  string `json:"username"`
+	Comment   string `json:"comment"`
+}
+
+type Profile struct {
+	Name      string           `json:"user_id"`
+	Username  string           `json:"username"`
+	Followers []database.User  `json:"followers"`
+	Following []database.User  `json:"following"`
+	Posts     []database.Photo `json:"posts"`
+}
+
+func (u User) ToDatabase() database.User {
+	return database.User{IdUser: u.IdUser}
+}
+
+func (p Photo) ToDatabase() database.Photo {
+	return database.Photo{
+		Comments: p.Comments,
+		Likes:    p.Likes,
+		Owner:    p.Owner,
+		PhotoId:  p.PhotoId,
+		Date:     p.Date,
+	}
+}
+
+func (p PhotoId) ToDatabase() database.PhotoId {
+	return database.PhotoId{
+		IdPhoto: p.IdPhoto,
+	}
+}
+
+func (u Username) ToDatabase() database.Username {
+	return database.Username{Username: u.Username}
+}
+
+func (c Comment) ToDatabase() database.Comment {
 	return database.Comment{
-		Id:         c.Id,
-		UserId:     c.UserId,
-		PhotoId:    c.PhotoId,
-		PhotoOwner: c.PhotoOwner,
-		Content:    c.Content,
+		Comment: c.Comment,
+	}
+}
+
+func (c CommentId) ToDatabase() database.CommentId {
+	return database.CommentId{
+		IdComment: c.IdComment,
+	}
+}
+
+func (cc CompleteComment) ToDatabase() database.CompleteComment {
+	return database.CompleteComment{
+		IdComment: cc.IdComment,
+		IdPhoto:   cc.IdPhoto,
+		IdUser:    cc.IdUser,
+		Comment:   cc.Comment,
 	}
 }

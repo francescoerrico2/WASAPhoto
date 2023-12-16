@@ -10,7 +10,6 @@ func (db *appdbimpl) GetStream(user User) ([]Photo, error) {
 
 	defer func() { _ = rows.Close() }()
 
-	// Read all the users in the resulset
 	var res []Photo
 	for rows.Next() {
 		var photo Photo

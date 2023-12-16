@@ -16,11 +16,11 @@ func (db *appdbimpl) GetCompleteCommentsList(requestingUser User, requestedUser 
 		if err != nil {
 			return nil, err
 		}
-		nickname, err := db.GetNickname(User{IdUser: comment.IdUser})
+		username, err := db.GetUsername(User{IdUser: comment.IdUser})
 		if err != nil {
 			return nil, err
 		}
-		comment.Nickname = nickname
+		comment.Username = username
 
 		comments = append(comments, comment)
 	}

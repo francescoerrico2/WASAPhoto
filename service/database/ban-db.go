@@ -26,10 +26,10 @@ func (db *appdbimpl) BannedUserCheck(requestingUser User, targetUser User) (bool
 
 	if err != nil {
 		return true, err
-
-		if cnt == 1 {
-			return true, nil
-		}
-		return false, nil
 	}
+	if cnt == 1 {
+		return true, nil
+	}
+	return false, nil
+
 }
