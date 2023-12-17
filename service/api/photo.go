@@ -17,10 +17,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) getPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) getUserPhotos(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	http.ServeFile(w, r, filepath.Join(photoFolder, ps.ByName("id"), "photos", ps.ByName("photo_id")))
 }
-func (rt *_router) postPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	w.Header().Set("Content-Type", "applicatio/json")
 	auth := extractBearer(r.Header.Get("Authorization"))
 	valid := validateRequestingUser(ps.ByName("id"), auth)

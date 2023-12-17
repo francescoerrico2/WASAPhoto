@@ -159,27 +159,7 @@ paths:
        "401": { $ref: "#/components/responses/UnauthorizedError" }
        "500": { $ref: "#/components/responses/InternalServerError" }
   
-  /users/{username}/ban:
-    parameters:
-      - $ref: "#/components/parameters/username"
-    get:
-      security:
-      - bearerAuth : []
-      tags: ["ban"]
-      summary: Return ban
-      operationId: getBans
-      description: |-
-        Return an user ban.
-      responses:
-        "200": 
-          description: User bans retrived successfully.
-          content:
-            application/json:
-              schema: 
-                $ref: "#/components/schemas/ban"
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/UnauthorizedError" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+  
 
   /users/{username}/follow/{followId}:
     parameters:
@@ -217,27 +197,6 @@ paths:
        "401": { $ref: "#/components/responses/UnauthorizedError" }
        "500": { $ref: "#/components/responses/InternalServerError" }
   
-  /users/{username}/follow:
-    parameters:
-      - $ref: "#/components/parameters/username"
-    get:
-      security:
-      - bearerAuth : []
-      tags: ["follow"]
-      summary: Return follow
-      operationId: getFollowers
-      description: |-
-        Return an user follow.
-      responses:
-        "200": 
-          description: User followers retrived successfully.
-          content:
-            application/json:
-              schema: 
-                $ref: "#/components/schemas/follow"
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/UnauthorizedError" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
   
   /users/{username}/photo/{photoId}:
     parameters:
@@ -349,28 +308,7 @@ paths:
         "401": { $ref: "#/components/responses/UnauthorizedError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
    
-  /users/{username}/photo/{photoId}/like:
-    parameters:
-      - $ref: "#/components/parameters/username"
-      - $ref : "#/components/parameters/photoID"
-    get:
-      security:
-      - bearerAuth : []
-      tags: ["like"]
-      summary: Return like
-      description: |-
-        Return a like from a specific photo.
-      operationId: getLikes
-      responses:
-        "200": 
-          description: Photo like retrived successfully.
-          content:
-            application/json:
-              schema: 
-                $ref: "#/components/schemas/like"
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/UnauthorizedError" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+
   
   /users/{username}/photo/{photoId}/comment/{commentId}:
     parameters:
@@ -416,28 +354,6 @@ paths:
        "401": { $ref: "#/components/responses/UnauthorizedError" }
        "500": { $ref: "#/components/responses/InternalServerError" }
   
-  /users/{username}/photo/{photoId}/comment:
-    parameters:
-      - $ref: "#/components/parameters/username"
-      - $ref: "#/components/parameters/photoID"
-    get:
-      security:
-      - bearerAuth : []
-      tags: ["comment"]
-      summary: Return comments
-      description: |-
-        Return all comments under a specific photo.
-      operationId: getComments
-      responses:
-        "200": 
-          description: Photo comments retrived successfully.
-          content:
-            application/json:
-              schema: 
-                $ref: "#/components/schemas/commentsList"
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/UnauthorizedError" }
-        "500": { $ref: "#/components/responses/InternalServerError" } 
 components:
   securitySchemes:
     bearerAuth:
