@@ -124,30 +124,6 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 
 }
 
-func (rt *_router) getUsersQuery(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	w.Header().Set("Content-Type", "application/json")
-	identifier := extractBearer(r.Header.Get("Authorization"))
-	if identifier == "" {
-		w.WriteHeader(http.StatusForbidden)
-		return
-	}
-	identificator := r.URL.Query().Get("id")
-	res, err := rt.db.SearchUser(User{IdUser: identifier}.ToDatabase(), User{IdUser: identificator}.ToDatabase())
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		ctx.Logger.WithError(err).Error("Database has encountered an error")
-		_ = json.NewEncoder(w).Encode([]User{})
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	if len(res) == 0 {
-		_ = json.NewEncoder(w).Encode([]User{})
-		return
-	}
-	_ = json.NewEncoder(w).Encode(res)
-
-}
-
 func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	pathId := ps.ByName("id")
 	valid := validateRequestingUser(pathId, extractBearer(r.Header.Get("Authorization")))
