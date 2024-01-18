@@ -3,13 +3,17 @@ info:
   title: WASAphoto API
   description: |
     This is the API for WASAphoto made by 1982048
-  version: 1.0.0
+  version: 0.0.1
 
 tags: 
   - name: "login"
     description: Endpoint that manages the login
+  - name: "search"
+    description: Endopint that manages search user profile
   - name: "user"
     description: Endpoint that manages users
+  - name: "stream"
+    description: Endpoint that manages stream
   - name: "ban"
     description: Endpoint that manages banned users
   - name: "follow"
@@ -44,9 +48,56 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/user" 
-  /user/{username}/setusername:
+  
+  /user:
+    get:
+      tags: ["search"]
+      summary: Gets the profile of the user with a certain id
+      description: A user can find another user's profile only if he's not banned by the latter. Multiple users might match partially the nickname being searched
+      operationId: getUserProfile
+
+      parameters: 
+        - $ref: "#/components/parameters/queryID"
+
+      responses:
+        '201':
+          description: users successfully found
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/userList" 
+        '401':
+          $ref: "#/components/responses/unauthorized"
+        '404':
+          $ref: "#/components/responses/not_found"
+        '500':
+          $ref: "#/components/responses/internal_server_error"
+          
+      security:
+        - bearerAuth: []   
+
+  /user/{username}:
     parameters:
       - $ref: "#/components/parameters/username"
+    get:
+      tags: ["user"]
+      summary: Retrieves all the info of a profile
+      description: Allows the user to obtain a profile complete info (can't be banned by the profile owner)
+      operationId: getProfile
+      
+      responses:
+        '200':
+          $ref: "#/components/responses/profile"
+        '206':
+          $ref: "#/components/responses/partial_content"
+        '401':
+          $ref: "#/components/responses/unauthorized"
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: "#/components/responses/not_found"
+        '500':
+          $ref: "#/components/responses/internal_server_error"
     put: 
       security:
       - bearerAuth : []
@@ -73,13 +124,13 @@ paths:
         "401": { $ref: "#/components/responses/UnauthorizedError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   
-  /user/{username}/stream:
+  /user/{username}/home:
     parameters:
       - $ref: "#/components/parameters/username"
     get:
       security:
       - bearerAuth : []
-      tags: ["user"]
+      tags: ["stream"]
       summary: Return stream
       description: |-
         Return a list of photos for the user stream.
@@ -99,28 +150,6 @@ paths:
         "401": { $ref: "#/components/responses/UnauthorizedError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
  
-  /users/{username}/profile:
-    parameters: 
-      - $ref: "#/components/parameters/username"
-    get:
-      security:
-      - bearerAuth : []
-      tags: ["user"]
-      summary: Return profile
-      operationId: getUserProfile
-      description: |-
-        Return an user profile.
-      responses:
-        "200": 
-          description: User profile retrived.
-          content:
-            application/json:
-              schema: 
-                $ref: "#/components/schemas/profile"
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/UnauthorizedError" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
-
   /users/{username}/ban/{banId}:
     parameters:
       - $ref: "#/components/parameters/username"
@@ -159,8 +188,6 @@ paths:
        "401": { $ref: "#/components/responses/UnauthorizedError" }
        "500": { $ref: "#/components/responses/InternalServerError" }
   
-  
-
   /users/{username}/follow/{followId}:
     parameters:
       - $ref: "#/components/parameters/username"
@@ -197,11 +224,47 @@ paths:
        "401": { $ref: "#/components/responses/UnauthorizedError" }
        "500": { $ref: "#/components/responses/InternalServerError" }
   
-  
   /users/{username}/photo/{photoId}:
     parameters:
       - $ref : "#/components/parameters/username"
       - $ref : "#/components/parameters/photoID"
+     get:
+      tags: ["photo"]
+      summary: Downloads a photo
+      description: A user can access a photo if he/she's the owner or if he/she wasn't banned by the owner
+      operationId: getPhoto
+      
+      responses:
+        '200':
+          $ref: "#/components/responses/photo"
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '403':
+          $ref: '#/components/responses/forbidden'
+        '404':
+          $ref: "#/components/responses/not_found"
+        '500':
+          $ref: "#/components/responses/internal_server_error"
+          
+      security:
+        - bearerAuth: [] 
+    delete:
+      security:
+      - bearerAuth : []
+      tags: ["photo"]
+      operationId: deletePhoto
+      summary: Remove photo
+      description: |-
+       Delete a photo.
+      responses:
+        "204": { description: Like deleted successfully. }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" } 
+  
+  /users/{username}/photo:
+    parameters:
+      - $ref : "#/components/parameters/username"
     put: 
       security:
       - bearerAuth : []
@@ -232,41 +295,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/photo"
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/UnauthorizedError" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
-    delete:
-      security:
-      - bearerAuth : []
-      tags: ["photo"]
-      operationId: deletePhoto
-      summary: Remove photo
-      description: |-
-       Delete a photo.
-      responses:
-        "204": { description: Like deleted successfully. }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/UnauthorizedError" }
-        "500": { $ref: "#/components/responses/InternalServerError" } 
-  
-  /users/{username}/photo:
-    parameters:
-      - $ref : "#/components/parameters/username"
-    get:
-      security:
-      - bearerAuth : []   
-      tags: ["photo"]
-      summary: Return photos
-      operationId: getUserPhotos
-      description: |-
-        Return user photos.
-      responses:
-        "200": 
-          description: User photos retrived.
-          content:
-            application/json:
-              schema: 
-                $ref: "#/components/schemas/photosList"
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -308,14 +336,12 @@ paths:
         "401": { $ref: "#/components/responses/UnauthorizedError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
    
-
-  
-  /users/{username}/photo/{photoId}/comment/{commentId}:
-    parameters:
-      - $ref: "#/components/parameters/username"
-      - $ref: "#/components/parameters/photoID"
-      - $ref: "#/components/parameters/commentID"
-    put:
+  /users/{username}/photo/{photoId}/comment:
+    parameters: 
+        - $ref: '#/components/parameters/username'
+        - $ref: '#/components/parameters/photoID'
+        
+    post:
       security:
       - bearerAuth : []
       tags: ["comment"]
@@ -340,6 +366,12 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
+    
+  /users/{username}/photo/{photoId}/comment/{commentId}:
+    parameters:
+      - $ref: "#/components/parameters/username"
+      - $ref: "#/components/parameters/photoID"
+      - $ref: "#/components/parameters/commentID"
     delete:
      security:
      - bearerAuth : []
@@ -500,7 +532,7 @@ components:
           maxLength: 16
   
     commentsList: 
-      title: Comments
+      title: Comment
       description: Comments schema.
       type: object
       properties:
@@ -618,7 +650,7 @@ components:
           maxLength: 16
     
     photosList: 
-      title: Photos
+      title: Photo
       description: Photos schema.
       type: object
       properties:
@@ -688,6 +720,27 @@ components:
                 type: boolean
                 example: true
     
+    userList:
+      description: List of users found
+      type: object
+      properties:
+        users:
+          description: Array of users with a partial match on the searched nickname
+          type: array
+          minItems: 0
+          maxItems: 10
+          items:
+            $ref: "#/components/schemas/user"
+          example:
+            - user_id: Wario21
+              nickname: marietto21
+            - user_id: Watermelon
+              nickname: cocomeros
+            - user_id: WaveBruh
+              nickname: ondaBro
+            - user_id: WantedMan66
+              nickname: uomoRicercato
+
     stream: 
       title: Stream
       description: Stream schema.
@@ -911,3 +964,16 @@ components:
       in: path
       required: true
       description: "**banID** of a single comment under a photo."
+
+     queryID:
+      name: id
+      in: query
+      description: id of the user that is being searched
+      schema:
+        description: usual *identifier*
+        type: string
+        pattern: '^.*?$'
+        minLength: 3
+        maxLength: 16
+        example: "Francesco00"
+      example: "Francesco00"

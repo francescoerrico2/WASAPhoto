@@ -4,9 +4,9 @@ import (
 	"net/http"
 )
 
-// Handler returns an instance of httprouter.Router that handle APIs registered here
 func (rt *_router) Handler() http.Handler {
 	rt.router.POST("/session", rt.wrap(rt.doLogin))
+	rt.router.GET("/users", rt.wrap(rt.getUsersQuery))
 	rt.router.PUT("/user/:username/setusername", rt.wrap(rt.setMyUserName))
 	rt.router.GET("/user/:username/stream", rt.wrap(rt.getMyStream))
 	rt.router.GET("/users/:username/profile", rt.wrap(rt.getUserProfile))
