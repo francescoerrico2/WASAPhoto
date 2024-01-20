@@ -14,7 +14,7 @@ const PhotosPerUserHome = 3
 type AppDatabase interface {
 	CreateUser(User) error
 
-	ModifyUsername(User, Username) error
+	ModifyNickname(User, Nickname) error
 
 	SearchUser(searcher User, userToSearch User) ([]CompleteUser, error)
 
@@ -48,7 +48,7 @@ type AppDatabase interface {
 
 	UncommentPhotoAuthor(PhotoId, CommentId) error
 
-	GetUsername(User) (string, error)
+	GetNickname(User) (string, error)
 
 	BannedUserCheck(a User, b User) (bool, error)
 

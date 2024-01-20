@@ -9,7 +9,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) getHome(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	w.Header().Set("Content-Type", "application/json")
 	identifier := extractBearer(r.Header.Get("Authorization"))
 	valid := validateRequestingUser(ps.ByName("id"), identifier)
@@ -106,7 +106,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	username, err := rt.db.GetUsername(User{IdUser: requestedUser}.ToDatabase())
+	nickname, err := rt.db.GetNickname(User{IdUser: requestedUser}.ToDatabase())
 	if err != nil {
 		ctx.Logger.WithError(err).Error("getUserProfile/db.GetNickname: error executing query")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -116,7 +116,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(Profile{
 		Name:      requestedUser,
-		Username:  username,
+		Nickname:  nickname,
 		Followers: followers,
 		Following: following,
 		Posts:     photos,
@@ -124,23 +124,23 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 
 }
 
-func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) putNickname(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	pathId := ps.ByName("id")
 	valid := validateRequestingUser(pathId, extractBearer(r.Header.Get("Authorization")))
 	if valid != 0 {
 		w.WriteHeader(valid)
 		return
 	}
-	var Username Username
-	err := json.NewDecoder(r.Body).Decode(&Username)
+	var nick Nickname
+	err := json.NewDecoder(r.Body).Decode(&nick)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("update-nickname: error decoding json")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	err = rt.db.ModifyUsername(
+	err = rt.db.ModifyNickname(
 		User{IdUser: pathId}.ToDatabase(),
-		Username.ToDatabase())
+		nick.ToDatabase())
 	if err != nil {
 		ctx.Logger.WithError(err).Error("update-nickname: error executing update query")
 		w.WriteHeader(http.StatusInternalServerError)

@@ -12,7 +12,7 @@ func (db *appdbimpl) SearchUser(searcher User, userToSearch User) ([]CompleteUse
 	var res []CompleteUser
 	for rows.Next() {
 		var user CompleteUser
-		err = rows.Scan(&user.IdUser, &user.Username)
+		err = rows.Scan(&user.IdUser, &user.Nickname)
 		if err != nil {
 			return nil, err
 		}
