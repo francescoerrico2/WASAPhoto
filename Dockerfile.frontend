@@ -1,0 +1,13 @@
+FROM node:lst as builder
+
+WORKDIR /app
+COPY webui webui
+
+WORKDIR /app/webui
+RUN npm build-prod
+
+FROM nginx:lastest
+
+COPY --from=builder /app/webui/dist /usr/share/nginx/html
+EXPOSE 80
+

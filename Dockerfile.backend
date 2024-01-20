@@ -1,0 +1,15 @@
+FROM goland:1.21.5 AS builder
+
+WORKDIR /src/
+COPY . .
+
+RUN go build -o /app/webapi ./cmd/webapi
+
+FROM debian:stable
+
+EXPOSE 3000 4000
+
+WORKDIR /app/
+COPY --from=builder /app/webapi ./
+
+CMD ["/app/webapi"]
