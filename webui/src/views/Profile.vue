@@ -54,22 +54,11 @@ export default {
             reader.readAsArrayBuffer(file);
 
             reader.onload = async () => {
-                // Post photo: /users/:id/photos
                 let response = await this.$axios.post("/users/"+this.$route.params.id+"/photos", reader.result, {
                     headers: {
                     'Content-Type': file.type
                     },
                 })
-                //console.log(response)
-                /*
-                this.photos.unshift({
-                    owner: response.data.owner,
-                    date: response.data.date,
-                    photo_id: response.data.photo_id,
-                    likes: response.data.likes,
-                    comments: response.data.comments,
-                })
-                */
                 this.photos.unshift(response.data)
                 this.postCnt += 1
             };
@@ -78,11 +67,9 @@ export default {
 		async followClick(){
             try{
                 if (this.followStatus){ 
-                    // Delete like: /users/:id/followers/:follower_id
                     await this.$axios.delete("/users/"+this.$route.params.id+"/followers/"+ localStorage.getItem('token'));
                     this.followerCnt -=1
                 }else{
-                    // Put like: /users/:id/followers/:follower_id
                     await this.$axios.put("/users/"+this.$route.params.id+"/followers/"+ localStorage.getItem('token'));
                     this.followerCnt +=1
                 }
@@ -96,11 +83,9 @@ export default {
 		async banClick(){
             try{
                 if (this.banStatus){
-                    // Delete ban: /users/:id/banned_users/:banned_id
                     await this.$axios.delete("/users/"+localStorage.getItem('token')+"/banned_users/"+ this.$route.params.id);
                     this.loadInfo()
                 }else{
-                    // Put ban: /users/:id/banned_users/:banned_id
                     await this.$axios.put("/users/"+localStorage.getItem('token')+"/banned_users/"+ this.$route.params.id);
                     this.followStatus = false
                 }
@@ -116,7 +101,6 @@ export default {
             }
 
 			try{
-                // Get user profile: /users/:id
 				let response = await this.$axios.get("/users/"+this.$route.params.id);
 
                 this.banStatus = false
@@ -184,7 +168,6 @@ export default {
                                 </button>
 
                                 <button v-else class="my-trnsp-btn ms-2" @click="goToSettings">
-                                    <!--Settings  <font-awesome-icon icon="fa-solid fa-gear" />-->
                                     <i class="my-nav-icon-gear fa-solid fa-gear"></i>
                                 </button>
                             </div>
@@ -279,13 +262,14 @@ export default {
 }
 
 .my-btn-add-photo{
-    background-color: green;
-    border-color: grey;
+    color:white;
+    background-color: blue;
+    border-color: blue;
 }
 .my-btn-add-photo:hover{
-    color: white;
-    background-color: green;
-    border-color: grey;
+    color: black;
+    background-color: blue;
+    border-color: blue;
 }
 
 </style>

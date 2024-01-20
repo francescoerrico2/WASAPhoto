@@ -27,7 +27,6 @@ export default {
 				return 
 			}
 			try {
-				// Search user (PUT):  "/users"
 				let response = await this.$axios.get("/users",{
 						params: {
 						id: this.searchValue,
@@ -46,7 +45,6 @@ export default {
 	},
 
 	async mounted(){
-		// Check if the user is logged
 		if (!localStorage.getItem('token')){
 			this.$router.replace("/login")
 		}
@@ -73,7 +71,7 @@ export default {
 <style>
 
 .no-result-text{
-	color: white;
+	color: black;
 	font-style: italic;
 }
 </style>

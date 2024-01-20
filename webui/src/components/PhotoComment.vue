@@ -10,7 +10,6 @@ export default {
     methods:{
         async deleteComment(){
             try{
-                // Delete comment: "/users/:id/photos/:photo_id/comments/:comment_id"
                 await this.$axios.delete("/users/"+this.photo_owner+"/photos/"+this.photo_id+"/comments/"+this.comment_id)
 
                 this.$emit('eliminateComment',this.comment_id)

@@ -13,18 +13,15 @@ export default {
 
 	methods:{
 		loadPhoto(){
-			// Get photo : "/users/:id/photos/:photo_id"
 			this.photoURL = __API_URL__+ "/users/"+this.owner+"/photos/"+this.photo_id 
 		},
 
 		async deletePhoto(){
 			try{
-				// Delete photo: /users/:id/photos/:photo_id
 				await this.$axios.delete("/users/"+this.owner+"/photos/"+this.photo_id)
-				// location.reload()
 				this.$emit("removePhoto",this.photo_id)
 			}catch(e){
-				//
+
 			}
 		},
 
@@ -42,8 +39,6 @@ export default {
 
 			try{
 				if (!this.liked){
-
-					// Put like: /users/:id/photos/:photo_id/likes/:like_id"
 					await this.$axios.put("/users/"+ this.owner +"/photos/"+this.photo_id+"/likes/"+ bearer)
 					this.allLikes.push({
 						user_id: bearer,
@@ -51,7 +46,6 @@ export default {
 					})
 
 				}else{
-					// Delete like: /users/:id/photos/:photo_id/likes/:like_id"
 					await this.$axios.delete("/users/"+ this.owner  +"/photos/"+this.photo_id+"/likes/"+ bearer)
 					this.allLikes.pop()
 				}
@@ -113,7 +107,6 @@ export default {
                 <div class="d-flex justify-content-end">
 
                     <button v-if="isOwner" class="my-trnsp-btn my-dlt-btn me-2" @click="deletePhoto">
-						<!--Delete-->
 						<i class="fa-solid fa-trash w-100 h-100"></i>
 					</button>
 

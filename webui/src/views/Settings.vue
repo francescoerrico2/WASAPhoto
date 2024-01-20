@@ -10,7 +10,6 @@ export default {
 	methods:{
 		async modifyNickname(){
 			try{
-				// Nickname put: /users/:id
 				let resp = await this.$axios.put("/users/"+this.$route.params.id,{
 					nickname: this.nickname,
 				})
@@ -34,14 +33,9 @@ export default {
 		</div>
 
 		<div class="row ">
+			
 			<div class="col-12 d-flex justify-content-center">
-				<p class="me-1" style="color: var(--color-red-danger);">[Disclaimer] </p> <p> A user has this structure: </p> <p class="ms-1 me-1" style="color: green;">nickname</p> <p> @identifier. </p>
-			</div>
-			<div class="col-12 d-flex justify-content-center">
-				<p>It's only possible to modify the part before the @</p> (the <p class="ms-1 me-1" style="color: green;">nickname</p>) <p>and not the one after (the identifier of the user) </p>
-			</div>
-			<div class="col-12 d-flex justify-content-center">
-				<p>Username has been intepreted as a nickname (they're the same thing).  </p>
+				<p>Enter a new Username</p>
 			</div>
 		</div>
 

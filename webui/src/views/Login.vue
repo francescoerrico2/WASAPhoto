@@ -48,7 +48,7 @@ export default {
 
 				<div class="row mt-2 mb-3 border-bottom">
 					<div class="col">
-						<h2 class="login-title">WASAPhoto Login</h2>
+						<img src="../assets/images/logo.png" class="login-image">
 					</div>
 				</div>
 
@@ -60,14 +60,14 @@ export default {
 						v-model="identifier" 
 						maxlength="16"
 						minlength="3"
-						placeholder="Your identifier" />
+						placeholder="Enter Username" />
 					</div>
 				</div>
 
 				<div class="row mt-2 mb-5 ">
 					<div class="col ">
 						<button class="btn btn-dark" :disabled="identifier == null || identifier.length >16 || identifier.length <3 || identifier.trim().length<3"> 
-						Register/Login 
+						Login 
 						</button>
 					</div>
 				</div>
@@ -77,12 +77,9 @@ export default {
 </template>
 
 <style>
-.login {
-    background-image: url("../assets/images/people.png");
-    height: 100vh;
+.login-image {
+    width:100%
 }
 
-.login-title {
-    color: black;
-}
+
 </style>

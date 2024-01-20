@@ -10,7 +10,6 @@ export default {
 	methods: {
 		async addComment(){
 			try{
-				
 				let response = await this.$axios.post("/users/"+ this.photo_owner +"/photos/"+this.photo_id+"/comments",{
 					user_id: localStorage.getItem('token'),
 					comment: this.commentValue

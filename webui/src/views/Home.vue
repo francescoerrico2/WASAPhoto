@@ -1,29 +1,33 @@
 <script>
 export default {
-	data: function() {
+	data: function () {
 		return {
 			errormsg: null,
-			photos: []
+			photos: [],
 		}
 	},
-	methods: {
-		async getStream() {
-			try{
-				this.errormsg = null;
-				let response = await this.$axios.get("/users/" + localStorage.getItem('token') + "/home")
-				if (response.data != null){
-					this.photos= response.data
-				}
-			}
-			catch(e){
-				await this.getStream()
 
+	methods: {
+		
+		async loadStream() {
+			try {
+				this.errormsg = null
+				let response = await this.$axios.get("/users/" + localStorage.getItem('token') + "/home")
+
+				if (response.data != null){
+					this.photos = response.data
+				}
+				
+			} catch (e) {
+				this.errormsg = e.toString()
 			}
-		},
+		}
 	},
+
 	async mounted() {
-		await this.refresh()
+		await this.loadStream()
 	}
+
 }
 </script>
 
@@ -44,7 +48,7 @@ export default {
 		</div>
 
 		<div v-if="photos.length === 0" class="row ">
-			<h1 class="d-flex justify-content-center mt-5" style="color: white;">There's no content yet, follow somebody!</h1>
+			<h1 class="d-flex justify-content-center mt-5" style="color: blue;">There's no content yet, start following someone!</h1>
 		</div>
 	</div>
 </template>

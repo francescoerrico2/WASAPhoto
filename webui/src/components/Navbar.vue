@@ -35,16 +35,16 @@ export default {
   <nav class="navbar navbar-expand-lg bg-light d-flex justify-content-between sticky-top mb-3 my-nav bg-transparent">
       <div class="col-4">
           <a class="navbar-brand ms-2 d-flex" @click="goBackHome">
-              <img class="brand-img" src="../assets/images/brand.png">
-              <div>WASAPhoto</div>
+              <img class="brand-img" src="../assets/images/logo.jpg">
+              <img class="logo-img" src="../assets/images/logo.png">
           </a>
       </div>
 
       <!-- -->
       <div class="col-4">
-          <form class="form-inline my-2 my-lg-0 d-flex justify-content-center m-auto">
-              <input class="form-control mr-sm-2 w-50" v-model="textVar" type="search" placeholder="Search users">
-              <button class="btn btn-light ms-2" type="submit" @click.prevent="searchFunc" style="display: none;">Search</button>
+          <form class="form-inline my-2 my-lg-0 d-flex justify-content-center aling-items-center m-auto">
+              <input class="form-control mr-sm-2 w-50" v-model="textVar" type="search" placeholder="Search" >
+              <button class="btn btn-light ms-2" type="submit" @click.prevent="searchFunc" style="display: none;">Search User</button>
           </form>
       </div>
 
@@ -82,10 +82,13 @@ export default {
 
 }
 .brand-img{
-  height: 30px;
-  width: 30px;
+  height:10%;
+  width: 10%;
 }
-
+.logo-img{
+  height:15%;
+  width: 40%;
+}
 .my-nav-icon-profile{
   color: black;
 }
@@ -96,4 +99,5 @@ export default {
   color: var(--color-red-danger);
   transform: scale(1.2);
 }
+
 </style>
