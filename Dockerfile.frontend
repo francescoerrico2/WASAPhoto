@@ -1,12 +1,12 @@
-FROM node:lst as builder
+FROM node:lts AS builder
 
 WORKDIR /app
 COPY webui webui
 
 WORKDIR /app/webui
-RUN npm build-prod
+RUN npm run build-prod
 
-FROM nginx:lastest
+FROM nginx:stable
 
 COPY --from=builder /app/webui/dist /usr/share/nginx/html
 EXPOSE 80
