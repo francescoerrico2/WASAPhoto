@@ -61,11 +61,7 @@ paths:
 
       responses:
         '200':
-          description: users successfully found
-          content:
-            application/json:
-              schema: 
-                $ref: "#/components/schemas/user_found" 
+          $ref: "#/components/responses/user_found" 
         '401':
           $ref: "#/components/responses/unauthorized"
         '404':
@@ -118,7 +114,7 @@ paths:
         "401": { $ref: "#/components/responses/unauthorized" }
         "403": { $ref: "#/components/responses/forbidden" }
         "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+        "500": { $ref: "#/components/responses/internal_server_error" }
   
   /users/{id}/home:
     parameters:
@@ -141,11 +137,11 @@ paths:
                 minItems: 0
                 description: image array schema.
                 maxItems: 999
-                items: { $ref: "#/components/schemas/stream"}
+                items: { $ref: "#/components/responses/stream"}
         "401": { $ref: "#/components/responses/unauthorized" }
         "403": { $ref: "#/components/responses/forbidden" }
         "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+        "500": { $ref: "#/components/responses/internal_server_error" }
  
   /users/{id}/banned_users/{banned_user_id}:
     parameters:
@@ -165,11 +161,11 @@ paths:
           content:
             application/json:
               schema: 
-                $ref: "#/components/schemas/ban"
+                $ref: "#/components/responses/no_content"
         "401": { $ref: "#/components/responses/unauthorized" }
         "403": { $ref: "#/components/responses/forbidden" }
         "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+        "500": { $ref: "#/components/responses/internal_server_error" }
 
     delete:
       security:
@@ -185,7 +181,7 @@ paths:
         "401": { $ref: "#/components/responses/unauthorized" }
         "403": { $ref: "#/components/responses/forbidden" }
         "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+        "500": { $ref: "#/components/responses/internal_server_error" }
   
   /users/{id}/followers/{follower_id}:
     parameters:
@@ -205,11 +201,11 @@ paths:
           content:
             application/json:
               schema: 
-                $ref: "#/components/schemas/follow"
+                $ref: "#/components/responses/no_content"
         "401": { $ref: "#/components/responses/unauthorized" }
         "403": { $ref: "#/components/responses/forbidden" }
         "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+        "500": { $ref: "#/components/responses/internal_server_error" }
   
     delete: 
       security:
@@ -224,7 +220,7 @@ paths:
         "401": { $ref: "#/components/responses/unauthorized" }
         "403": { $ref: "#/components/responses/forbidden" }
         "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+        "500": { $ref: "#/components/responses/internal_server_error" }
   
   
   /users/{id}/photos/{photo_id}:
@@ -260,11 +256,11 @@ paths:
       description: |-
        Delete a photo.
       responses:
-        "204": { description: Like deleted successfully. }
+        "204": { description: Photo deleted successfully. }
         "401": { $ref: "#/components/responses/unauthorized" }
         "403": { $ref: "#/components/responses/forbidden" }
         "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+        "500": { $ref: "#/components/responses/internal_server_error" }
   
   /users/{id}/photos:
     parameters:
@@ -298,10 +294,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/photo_uploaded"
+                $ref: "#/components/responses/photo_uploaded"
         "401": { $ref: "#/components/responses/unauthorized" }
         "403": { $ref: "#/components/responses/forbidden" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+        "500": { $ref: "#/components/responses/internal_server_error" }
   /users/{id}/photos/{photo_id}/likes/{like_id}:
     parameters:
       - $ref: "#/components/parameters/identifier"
@@ -321,11 +317,11 @@ paths:
           content:
             application/json:
               schema: 
-                $ref: "#/components/schemas/like"
+                $ref: "#/components/responses/no_content"
         "401": { $ref: "#/components/responses/unauthorized" }
         "403": { $ref: "#/components/responses/forbidden" }
         "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+        "500": { $ref: "#/components/responses/internal_server_error" }
     delete: 
       security:
       - bearerAuth : []
@@ -339,11 +335,11 @@ paths:
         "401": { $ref: "#/components/responses/unauthorized" }
         "403": { $ref: "#/components/responses/forbidden" }
         "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+        "500": { $ref: "#/components/responses/internal_server_error" }
   /users/{id}/photos/{photo_id}/comments:
     parameters: 
-        - $ref: '#/components/parameters/username'
-        - $ref: '#/components/parameters/photoID'
+        - $ref: '#/components/parameters/identifier'
+        - $ref: '#/components/parameters/photo_id'
         
     post:
       security:
@@ -366,11 +362,11 @@ paths:
           content:
             application/json:
               schema: 
-                $ref: "#/components/schemas/commentsList"
+                $ref: "#/components/responses/comment_added"
         "401": { $ref: "#/components/responses/unauthorized" }
         "403": { $ref: "#/components/responses/forbidden" }
         "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+        "500": { $ref: "#/components/responses/internal_server_error" }
   /users/{id}/photos/{photo_id}/comments/{comment_id}:
     parameters:
       - $ref: "#/components/parameters/identifier"
@@ -389,7 +385,7 @@ paths:
         "401": { $ref: "#/components/responses/unauthorized" }
         "403": { $ref: "#/components/responses/forbidden" }
         "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+        "500": { $ref: "#/components/responses/internal_server_error" }
 
 
 components:
@@ -454,8 +450,8 @@ components:
           schema:
             $ref: "#/components/schemas/raw_photo"
   
-#Parametres
-  parametres:
+#Parameters
+  parameters:
    
     identifier:
       name: id
