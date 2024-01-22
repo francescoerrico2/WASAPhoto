@@ -8,7 +8,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) putLike(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	photoAuthor := ps.ByName("id")
 	requestingUserId := extractBearer(r.Header.Get("Authorization"))
@@ -55,7 +55,7 @@ func (rt *_router) putLike(w http.ResponseWriter, r *http.Request, ps httprouter
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (rt *_router) deleteLike(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	photoAuthor := ps.ByName("id")
 	requestingUserId := extractBearer(r.Header.Get("Authorization"))
