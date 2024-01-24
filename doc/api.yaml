@@ -128,16 +128,7 @@ paths:
         Return a list of photos for the user stream.
       operationId: getMyStream
       responses:
-        "200": 
-          description: User stream retrived successfully.
-          content:
-            application/json:
-              schema: 
-                type: array
-                minItems: 0
-                description: image array schema.
-                maxItems: 999
-                items: { $ref: "#/components/responses/stream"}
+        "200": { $ref: "#/components/responses/stream"}
         "401": { $ref: "#/components/responses/unauthorized" }
         "403": { $ref: "#/components/responses/forbidden" }
         "404": { $ref: "#/components/responses/not_found" }
@@ -156,7 +147,7 @@ paths:
        Ban an user.
       operationId: banUser
       responses:
-        "201": 
+        "204": 
           description: User banned successfully.
           content:
             application/json:
@@ -196,7 +187,7 @@ paths:
         Folow an user.
       operationId: followUser
       responses:
-        "201": 
+        "204": 
           description: User followed successfully.
           content:
             application/json:
@@ -294,7 +285,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/responses/photo_uploaded"
+                $ref: "#/components/schemas/photo_uploaded"
         "401": { $ref: "#/components/responses/unauthorized" }
         "403": { $ref: "#/components/responses/forbidden" }
         "500": { $ref: "#/components/responses/internal_server_error" }
@@ -306,13 +297,13 @@ paths:
     put: 
       security:
       - bearerAuth : []
-      tags: [likes"]
+      tags: ["likes"]
       operationId: likePhoto
       summary: Like photo
       description: |-
         Add a like to a specific photo.
       responses:
-        "201":
+        "204":
           description: Like added successfully.
           content:
             application/json:
@@ -362,7 +353,7 @@ paths:
           content:
             application/json:
               schema: 
-                $ref: "#/components/responses/comment_added"
+                $ref: "#/components/schemas/comment_added"
         "401": { $ref: "#/components/responses/unauthorized" }
         "403": { $ref: "#/components/responses/forbidden" }
         "404": { $ref: "#/components/responses/not_found" }
@@ -425,18 +416,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/photos"          
-    comment_added:
-      description: Comment has been added successfully. Returns the comment *unique* identifier
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/comment_identifier"          
-    photo_uploaded:
-      description: photo has been uploaded successfully. Returns the *unique* id of the posted photo
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/photo"
     profile:
       description: All the info of a profile
       content:
@@ -557,7 +536,7 @@ components:
       example:
         user_id: "FrancescoErrico"
         nickname: "Francescoe02"
-   
+
     comment_identifier:
       description: It's a comment *unique* id
       type: object
@@ -817,3 +796,15 @@ components:
       properties:
         identifier:
           $ref: "#/components/schemas/user_nickname/properties/nickname"
+    comment_added:
+      description: Comment has been added successfully. Returns the comment *unique* identifier
+      type: object
+      properties:
+        identifier:
+             $ref: "#/components/schemas/comment_identifier"          
+    photo_uploaded:
+      description: photo has been uploaded successfully. Returns the *unique* id of the posted photo
+      type: object
+      properties:
+        identifier:
+            $ref: "#/components/schemas/photo"
