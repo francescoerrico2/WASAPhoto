@@ -3,26 +3,24 @@ info:
   title: WASAphoto API
   description: |
     This is the API for WASAphoto made by 1982048
-  version: 0.0.1
+  version: 1.0.0
 
 tags: 
   - name: "login"
     description: Endpoint that manages the login
-  - name: "search"
-    description: Endopint that manages search user profile
   - name: "user"
     description: Endpoint that manages users
-  - name: "stream"
-    description: Endpoint that manages stream
+  - name: "search"
+    description: Endpoint that manages users
   - name: "ban"
     description: Endpoint that manages banned users
-  - name: "followers"
+  - name: "follow"
     description: Endpoint that manages followers
   - name: "photo"
     description: Endpoint that manages photos
-  - name: "comments"
+  - name: "comment"
     description: Endpoint that manages comments
-  - name: "likes"
+  - name: "like"
     description: Endpoint that manages likes
 
 paths:
@@ -40,63 +38,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/user_login"
+              $ref: "#/components/schemas/login"
       responses:
         '201':
           description: User log-in action successful
           content:
             application/json:
               schema: 
-                $ref: "#/components/schemas/login_return" 
-  
-  /users:
-    get:
-      tags: ["search"]
-      summary: Gets the profile of the user with a certain id
-      description: A user can find another user's profile only if he's not banned by the latter. Multiple users might match partially the nickname being searched
-      operationId: getUserProfile
-
-      parameters: 
-        - $ref: "#/components/parameters/query_id"
-
-      responses:
-        '200':
-          $ref: "#/components/responses/user_found" 
-        '401':
-          $ref: "#/components/responses/unauthorized"
-        '404':
-          $ref: "#/components/responses/not_found"
-        '500':
-          $ref: "#/components/responses/internal_server_error"
-          
-      security:
-        - bearerAuth: []   
-
-  /users/{id}:
+                $ref: "#/components/schemas/user" 
+  /user/{username}/setusername:
     parameters:
-      - $ref: "#/components/parameters/identifier"
-    get:
-      tags: ["user"]
-      summary: Retrieves all the info of a profile
-      description: Allows the user to obtain a profile complete info (can't be banned by the profile owner)
-      operationId: getProfile
-      
-      responses:
-        '200':
-          $ref: "#/components/responses/profile"
-        '206':
-          $ref: "#/components/responses/partial_content"
-        '401':
-          $ref: "#/components/responses/unauthorized"
-        '403':
-          $ref: '#/components/responses/forbidden'
-        '404':
-          $ref: "#/components/responses/not_found"
-        '500':
-          $ref: "#/components/responses/internal_server_error"
-      security:
-        - bearerAuth : []
+      - $ref: "#/components/parameters/username"
     put: 
+      security:
+      - bearerAuth : []
       tags: ["user"]
       summary: Set username
       description: |-
@@ -107,37 +62,118 @@ paths:
         content: 
           application/json:
             schema:
-              $ref: "#/components/schemas/user_nickname"
+              $ref: "#/components/schemas/user"
         required: true
       responses:
-        "204": { $ref: "#/components/responses/no_content" }
-        "401": { $ref: "#/components/responses/unauthorized" }
-        "403": { $ref: "#/components/responses/forbidden" }
-        "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/internal_server_error" }
+        "200":
+          description: Username set successfully.
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/user"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
   
-  /users/{id}/home:
+  /user/{username}/stream:
     parameters:
-      - $ref: "#/components/parameters/identifier"
+      - $ref: "#/components/parameters/username"
     get:
       security:
       - bearerAuth : []
-      tags: ["stream"]
+      tags: ["user"]
       summary: Return stream
       description: |-
         Return a list of photos for the user stream.
       operationId: getMyStream
       responses:
-        "200": { $ref: "#/components/responses/stream"}
-        "401": { $ref: "#/components/responses/unauthorized" }
-        "403": { $ref: "#/components/responses/forbidden" }
-        "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/internal_server_error" }
+        "200": 
+          description: User stream retrived successfully.
+          content:
+            application/json:
+              schema: 
+                type: array
+                minItems: 0
+                description: image array schema.
+                maxItems: 999
+                items: { $ref: "#/components/schemas/stream"}
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
  
-  /users/{id}/banned_users/{banned_user_id}:
+  /users/{username}/profile:
+    parameters: 
+      - $ref: "#/components/parameters/username"
+    get:
+      security:
+      - bearerAuth : []
+      tags: ["user"]
+      summary: Return profile
+      operationId: getProfile
+      description: |-
+        Return an user profile.
+      responses:
+        "200": 
+          description: User profile retrived.
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/profile"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /users:
+    get:
+      tags: ["search"]
+      summary: Get user profile information.
+      operationId: getUserProfile
+      parameters:
+        - $ref: "#/components/parameters/query_id"
+      responses:
+        '200':
+          description: User profile retrieved successfully.
+          content:
+            application/json:
+              example:
+                userId: "192839"
+                username: "Mario_Rossi"
+                photos:
+                  - photosId: "001"
+                    uploadDataTime: "2023-01-01T00:00:01Z"
+                    likes: 10
+                    comments: 3
+                  - photosId: "002"
+                    uploadDataTime: "2023-03-03T09:00:01Z"
+                    likes: 3
+                    comments: 0
+                totalPhotos: 2
+                followers: 15
+                following: 2  
+        '400':
+          description: Bad request. Invalid input or missing required parameters.
+          content:
+            application/json:
+              example:
+                error: Bad request. Invalid input or missing required parameters.
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              example:
+                error: User not found.
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              example:
+                error: Internal Server Error.
+
+
+  /users/{username}/ban/{banId}:
     parameters:
-        - $ref: "#/components/parameters/banned_user_id"
-        - $ref: '#/components/parameters/identifier'
+      - $ref: "#/components/parameters/username"
+      - $ref: "#/components/parameters/banID"
     put:
       security:
       - bearerAuth : []
@@ -147,16 +183,15 @@ paths:
        Ban an user.
       operationId: banUser
       responses:
-        "204": 
+        "201": 
           description: User banned successfully.
           content:
             application/json:
               schema: 
-                $ref: "#/components/responses/no_content"
-        "401": { $ref: "#/components/responses/unauthorized" }
-        "403": { $ref: "#/components/responses/forbidden" }
-        "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/internal_server_error" }
+                $ref: "#/components/schemas/ban"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
 
     delete:
       security:
@@ -168,95 +203,96 @@ paths:
       operationId: unbanUser
 
       responses:
-        "204": { description: Ban deleted successfully. }
-        "401": { $ref: "#/components/responses/unauthorized" }
-        "403": { $ref: "#/components/responses/forbidden" }
-        "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/internal_server_error" }
+       "204": { description: Ban deleted successfully. }
+       "400": { $ref: "#/components/responses/BadRequest" }
+       "401": { $ref: "#/components/responses/UnauthorizedError" }
+       "500": { $ref: "#/components/responses/InternalServerError" }
   
-  /users/{id}/followers/{follower_id}:
+  /users/{username}/ban:
     parameters:
-      - $ref: "#/components/parameters/identifier"
-      - $ref: "#/components/parameters/follower_id"
+      - $ref: "#/components/parameters/username"
+    get:
+      security:
+      - bearerAuth : []
+      tags: ["ban"]
+      summary: Return ban
+      operationId: getBans
+      description: |-
+        Return an user ban.
+      responses:
+        "200": 
+          description: User bans retrived successfully.
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/ban"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
+  /users/{username}/follow/{followId}:
+    parameters:
+      - $ref: "#/components/parameters/username"
+      - $ref: "#/components/parameters/followID"
     put: 
       security:
       - bearerAuth : []
-      tags: ["followers"]
+      tags: ["follow"]
       summary: Follow user
       description: |-
         Folow an user.
       operationId: followUser
       responses:
-        "204": 
+        "201": 
           description: User followed successfully.
           content:
             application/json:
               schema: 
-                $ref: "#/components/responses/no_content"
-        "401": { $ref: "#/components/responses/unauthorized" }
-        "403": { $ref: "#/components/responses/forbidden" }
-        "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/internal_server_error" }
-  
+                $ref: "#/components/schemas/follow"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
     delete: 
       security:
       - bearerAuth : []
-      tags: ["followers"]
+      tags: ["follow"]
       summary: Unfollow user
       description: |-
        Unfollow an user.
       operationId: unfollowUser
       responses:
-        "204": { description: Follow deleted successfully. }
-        "401": { $ref: "#/components/responses/unauthorized" }
-        "403": { $ref: "#/components/responses/forbidden" }
-        "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/internal_server_error" }
+       "204": { description: Follow deleted successfully. }
+       "400": { $ref: "#/components/responses/BadRequest" }
+       "401": { $ref: "#/components/responses/UnauthorizedError" }
+       "500": { $ref: "#/components/responses/InternalServerError" }
   
-  
-  /users/{id}/photos/{photo_id}:
+  /users/{username}/follow:
     parameters:
-      - $ref : "#/components/parameters/identifier"
-      - $ref : "#/components/parameters/photo_id"
+      - $ref: "#/components/parameters/username"
     get:
-      tags: ["photo"]
-      summary: Downloads a photo
-      description: A user can access a photo if he/she's the owner or if he/she wasn't banned by the owner
-      operationId: getPhoto
-      
-      responses:
-        '200':
-          $ref: "#/components/responses/photo"
-        '401':
-          $ref: '#/components/responses/unauthorized'
-        '403':
-          $ref: '#/components/responses/forbidden'
-        '404':
-          $ref: "#/components/responses/not_found"
-        '500':
-          $ref: "#/components/responses/internal_server_error"
-          
-      security:
-        - bearerAuth: [] 
-    delete:
       security:
       - bearerAuth : []
-      tags: ["photo"]
-      operationId: deletePhoto
-      summary: Remove photo
+      tags: ["follow"]
+      summary: Return follow
+      operationId: getFollowers
       description: |-
-       Delete a photo.
+        Return an user follow.
       responses:
-        "204": { description: Photo deleted successfully. }
-        "401": { $ref: "#/components/responses/unauthorized" }
-        "403": { $ref: "#/components/responses/forbidden" }
-        "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/internal_server_error" }
+        "200": 
+          description: User followers retrived successfully.
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/follow"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
   
-  /users/{id}/photos:
+  /users/{username}/photo/{photoId}:
     parameters:
-      - $ref : "#/components/parameters/identifier"
-    post: 
+      - $ref : "#/components/parameters/username"
+      - $ref : "#/components/parameters/photoID"
+    put: 
       security:
       - bearerAuth : []
       tags: ["photo"]
@@ -285,57 +321,115 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/photo_uploaded"
-        "401": { $ref: "#/components/responses/unauthorized" }
-        "403": { $ref: "#/components/responses/forbidden" }
-        "500": { $ref: "#/components/responses/internal_server_error" }
-  /users/{id}/photos/{photo_id}/likes/{like_id}:
+                $ref: "#/components/schemas/photo"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+    delete:
+      security:
+      - bearerAuth : []
+      tags: ["photo"]
+      operationId: deletePhoto
+      summary: Remove photo
+      description: |-
+       Delete a photo.
+      responses:
+        "204": { description: Like deleted successfully. }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" } 
+  
+  /users/{username}/photo:
     parameters:
-      - $ref: "#/components/parameters/identifier"
-      - $ref : "#/components/parameters/photo_id"
-      - $ref : "#/components/parameters/like_id"
+      - $ref : "#/components/parameters/username"
+    get:
+      security:
+      - bearerAuth : []   
+      tags: ["photo"]
+      summary: Return photos
+      operationId: getUserPhotos
+      description: |-
+        Return user photos.
+      responses:
+        "200": 
+          description: User photos retrived.
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/photosList"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+ 
+  /users/{username}/photo/{photoId}/like/{likeId}:
+    parameters:
+      - $ref: "#/components/parameters/username"
+      - $ref : "#/components/parameters/photoID"
+      - $ref : "#/components/parameters/likeID"
     put: 
       security:
       - bearerAuth : []
-      tags: ["likes"]
+      tags: [like"]
       operationId: likePhoto
       summary: Like photo
       description: |-
         Add a like to a specific photo.
       responses:
-        "204":
+        "201":
           description: Like added successfully.
           content:
             application/json:
               schema: 
-                $ref: "#/components/responses/no_content"
-        "401": { $ref: "#/components/responses/unauthorized" }
-        "403": { $ref: "#/components/responses/forbidden" }
-        "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/internal_server_error" }
+                $ref: "#/components/schemas/like"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
     delete: 
       security:
       - bearerAuth : []
-      tags: ["likes"]
+      tags: ["like"]
       operationId: unlikePhoto
       summary: Delete like
       description: |-
         Remove a like from a specific photo.
       responses:
         "204": { description: Like deleted successfully. }
-        "401": { $ref: "#/components/responses/unauthorized" }
-        "403": { $ref: "#/components/responses/forbidden" }
-        "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/internal_server_error" }
-  /users/{id}/photos/{photo_id}/comments:
-    parameters: 
-        - $ref: '#/components/parameters/identifier'
-        - $ref: '#/components/parameters/photo_id'
-        
-    post:
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+   
+  /users/{username}/photo/{photoId}/like:
+    parameters:
+      - $ref: "#/components/parameters/username"
+      - $ref : "#/components/parameters/photoID"
+    get:
       security:
       - bearerAuth : []
-      tags: ["comments"]
+      tags: ["like"]
+      summary: Return like
+      description: |-
+        Return a like from a specific photo.
+      operationId: getLikes
+      responses:
+        "200": 
+          description: Photo like retrived successfully.
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/like"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+  
+  /users/{username}/photo/{photoId}/comment/{commentId}:
+    parameters:
+      - $ref: "#/components/parameters/username"
+      - $ref: "#/components/parameters/photoID"
+      - $ref: "#/components/parameters/commentID"
+    put:
+      security:
+      - bearerAuth : []
+      tags: ["comment"]
       summary: Add comment
       operationId: commentPhoto
       description: |-
@@ -353,149 +447,604 @@ paths:
           content:
             application/json:
               schema: 
-                $ref: "#/components/schemas/comment_added"
-        "401": { $ref: "#/components/responses/unauthorized" }
-        "403": { $ref: "#/components/responses/forbidden" }
-        "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/internal_server_error" }
-  /users/{id}/photos/{photo_id}/comments/{comment_id}:
-    parameters:
-      - $ref: "#/components/parameters/identifier"
-      - $ref: "#/components/parameters/photo_id"
-      - $ref: "#/components/parameters/comment_id"
+                $ref: "#/components/schemas/commentsList"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
     delete:
      security:
      - bearerAuth : []
-     tags: ["comments"]
+     tags: ["comment"]
      operationId: uncommentPhoto
      summary: Remove comment
      description: |-
        Deletete a comment under a specific photo.
      responses:
-        "204": { description: Comment deleted successfully. }
-        "401": { $ref: "#/components/responses/unauthorized" }
-        "403": { $ref: "#/components/responses/forbidden" }
-        "404": { $ref: "#/components/responses/not_found" }
-        "500": { $ref: "#/components/responses/internal_server_error" }
-
-
+       "204": { description: Comment deleted successfully. }
+       "400": { $ref: "#/components/responses/BadRequest" }
+       "401": { $ref: "#/components/responses/UnauthorizedError" }
+       "500": { $ref: "#/components/responses/InternalServerError" }
+  
+  /users/{username}/photo/{photoId}/comment:
+    parameters:
+      - $ref: "#/components/parameters/username"
+      - $ref: "#/components/parameters/photoID"
+    get:
+      security:
+      - bearerAuth : []
+      tags: ["comment"]
+      summary: Return comments
+      description: |-
+        Return all comments under a specific photo.
+      operationId: getComments
+      responses:
+        "200": 
+          description: Photo comments retrived successfully.
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/commentsList"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" } 
 components:
-#securitySchemes
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-
-#Responses
   responses: 
-    unauthorized:
+    UnauthorizedError:
       description: Access token is missing or invalid
-    not_found:
+    BadRequest:
       description: The request was not compliant with the documentation (eg. missing fields, etc).
-    internal_server_error:
+    InternalServerError:
       description: The server encountered an internal error. Further info in server logs.
-    no_content:
-      description: Response associated to the 204 http status 
-    partial_content:
-      description: Response associated to the 206 http status 
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/complete_profile" 
-    forbidden:
-      description: Response associated to the 403 http status (Access denied )
-    user_found:
-      description: There's a match for the given identifier/nickname. User/users found successfully
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/users_list"         
-    stream:
-      description: Contains a list of photos from following users in a reversed chronological order
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/photos"          
-    profile:
-      description: All the info of a profile
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/complete_profile"
-    photo:
-      description: The binary data of a photo
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/raw_photo"
-  
-#Parameters
-  parameters:
+  schemas:
    
-    identifier:
-      name: id
-      in: path
-      description: A user's unique id
-      required: true
+    user:
+      title: User 
+      description: User schema.
+      type: object
+      properties:
+        identifier:
+          description: Unique user identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#U1234"
+          minLength: 3
+          maxLength: 16
+        username:
+          description: User username.
+          type: string
+          pattern: '^.*?$'
+          example: Francescoerrico
+          minLength: 3
+          maxLength: 16
+  
+    profile:
+      title: Profile
+      description: Profile schema.
+      type: object
+      properties:
+        requestid:
+          description: Unique user identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#U1234"
+          minLength: 3
+          maxLength: 16
+        identifier:
+          description: Unique user identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#U1234"
+          minLength: 3
+          maxLength: 16
+        username:
+          description: User username.
+          type: string
+          pattern: '^.*?$'
+          example: Francescoerrico
+          minLength: 3
+          maxLength: 16
+        followersCount:
+          description: Number of followers.
+          type: integer
+          example: 0
+          minimum: 0
+          maximum: 9999
+        followingsCount:
+          description: Number of followings.
+          type: integer
+          example: 0
+          minimum: 0
+          maximum: 9999
+        photoCount:
+          description: Number of photos.
+          type: integer
+          example: 0
+          minimum: 0
+          maximum: 9999
+        followStatus:
+          description: User follow status.
+          type: boolean
+          example: false
+        banStatus:
+          description: User ban status.
+          type: boolean
+          example: false
+        checkIfBanned:
+          description: Check if user is banned.
+          type: boolean
+          example: false
+    
+    ban:
+      title: Ban 
+      description: Ban schema.
+      type: object
+      properties:
+        banId:
+          description: banID schema.
+          type: string
+          pattern: '^.*?$'
+          example: "#B1234"
+          minLength: 3
+          maxLength: 16
+        bannedId:
+          description: Unique user identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#U1234"
+          minLength: 3
+          maxLength: 16
+        userId:
+          description: Unique user identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#U1234"
+          minLength: 3
+          maxLength: 16
+    
+    follow:
+      title: Follow 
+      description: Follow schema.
+      type: object
+      properties:
+        followId:
+          description: followID schema.
+          type: string
+          pattern: '^.*?$'
+          example: "#F1234"
+          minLength: 3
+          maxLength: 16
+        followedId:
+          description: Unique user identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#U1234"
+          minLength: 3
+          maxLength: 16
+        userId:
+          description: Unique user identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#U1234"
+          minLength: 3
+          maxLength: 16
+  
+    commentsList: 
+      title: Comments
+      description: Comments schema.
+      type: object
+      properties:
+        requestId:
+          description: Unique user identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#U1234"
+          minLength: 3
+          maxLength: 16
+        photoId: 
+          description:  Unique photo identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#P1234"
+          minLength: 3
+          maxLength: 16
+        photoOwner:
+          description: Unique user identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#U1234"
+          minLength: 3
+          maxLength: 16
+        comments: 
+          description: list of objects (each object is a comment).
+          type: array
+          minItems: 0
+          maxItems: 99999
+          items:
+            type: object
+            properties:
+              id:
+                description: Unique comment identifier.
+                type: string
+                pattern: '^.*?$'
+                example: "#C1234"
+                minLength: 3
+                maxLength: 16
+              userId:
+                description: Unique user identifier.
+                type: string
+                pattern: '^.*?$'
+                example: "#U5678" 
+                minLength: 3
+                maxLength: 16
+              photoId: 
+                description:  Unique photo identifier.
+                type: string
+                pattern: '^.*?$'
+                example: "#P1234"
+                minLength: 3
+                maxLength: 16
+              photoOwner:
+                description: Unique user identifier.
+                type: string
+                pattern: '^.*?$'
+                example: "#U1234"
+                minLength: 3
+                maxLength: 16
+              photoOwnerUsername:
+                description: User username.
+                type: string
+                pattern: '^.*?$'
+                example: Francescoerrico
+                minLength: 3
+                maxLength: 16
+              username:
+                description: User username.
+                type: string
+                pattern: '^.*?$'
+                example: Francescoerrico
+                minLength: 3
+                maxLength: 16
+              content:
+                description: Content of the comment.
+                type: string
+                pattern: '^.*?$'
+                example: "Hello World!"
+                minLength: 2
+                maxLength: 30
+    
+    like:
+      title: Like 
+      description: Like schema.
+      type: object
+      properties:
+        likeId:
+          description: likeID schema.
+          type: string
+          pattern: '^.*?$'
+          example: "#L1234"
+          minLength: 3
+          maxLength: 16
+        userId:
+          description: Unique user identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#U5678" 
+          minLength: 3
+          maxLength: 16
+        photoId: 
+          description:  Unique photo identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#P1234"
+          minLength: 3
+          maxLength: 16
+        photoOwner:
+          description: Unique user identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#U1234"
+          minLength: 3
+          maxLength: 16
+    
+    photosList: 
+      title: Photos
+      description: Photos schema.
+      type: object
+      properties:
+        requestId:
+          description: Unique user identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#U1234" 
+          minLength: 3
+          maxLength: 16
+        identifier:
+          description: Unique user identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#U1234" 
+          minLength: 3
+          maxLength: 16
+        photos: 
+          description: list of objects (each object is a photo)
+          type: array
+          minItems: 0
+          maxItems: 99999
+          items:
+            type: object
+            properties:
+              Id: 
+                description:  Unique photo identifier.
+                type: string
+                pattern: '^.*?$'
+                example: "#P1234"
+                minLength: 3
+                maxLength: 16
+              userId:
+                description: Unique user identifier.
+                type: string
+                pattern: '^.*?$'
+                example: "#U5678" 
+                minLength: 3
+                maxLength: 16
+              file: 
+                description: file
+                type: string
+                format: binary
+                minLength: 3
+                maxLength: 16
+              date:
+                description: Registration date.
+                type: string
+                format: date-time
+                example: "2022-11-02T09:00:00Z"
+                minLength: 3
+                maxLength: 9999
+              likeCount:
+                description: photo likes count.
+                type: integer
+                example: 0
+                minimum: 0
+                maximum: 9999
+              commentCount:
+                description: photo comments count.
+                type: integer
+                example: 0
+                minimum: 0
+                maximum: 9999
+              likeStatus:
+                description: photo like status.
+                type: boolean
+                example: true
+    
+    stream: 
+      title: Stream
+      description: Stream schema.
+      type: object
+      properties:
+        identifier:
+          description: Unique user identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#U1234" 
+          minLength: 3
+          maxLength: 16
+        photos: 
+          description: list of objects (each object is a photo)
+          type: array
+          minItems: 0
+          maxItems: 99999
+          items:
+            type: object
+            properties:
+              Id: 
+                description:  Unique photo identifier.
+                type: string
+                pattern: '^.*?$'
+                example: "#P1234"
+                minLength: 3
+                maxLength: 16
+              userId:
+                description: Unique user identifier.
+                type: string
+                pattern: '^.*?$'
+                example: "#U5678" 
+                minLength: 3
+                maxLength: 16
+              username:
+                description: User username.
+                type: string
+                pattern: '^.*?$'
+                example: Francescoerrico
+                minLength: 3
+                maxLength: 16
+              file: 
+                description: file
+                type: string
+                format: binary
+                minLength: 3
+                maxLength: 16
+              date:
+                description: Registration date.
+                type: string
+                format: date-time
+                example: "2022-11-02T09:00:00Z"
+                minLength: 3
+                maxLength: 9999
+              likeCount:
+                description: photo likes count.
+                type: integer
+                example: 0
+                minimum: 0
+                maximum: 9999
+              commentCount:
+                description: photo comments count.
+                type: integer
+                example: 0
+                minimum: 0
+                maximum: 9999
+              likeStatus:
+                description: photo like status.
+                type: boolean
+                example: true
+  
+    login:        
+      title: Login
+      description: Login schema.
+      type: object
+      properties:
+        username:
+          description: user
+          type: string
+          example: Lucian
+          pattern: '^.*?$'
+          minLength: 3
+          maxLength: 16
+ 
+    photo:
+      title: Photo
+      description: photo schema.
+      properties:
+        Id: 
+          description:  Unique photo identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#P1234"
+          minLength: 3
+          maxLength: 16
+        userId:
+          description: Unique user identifier.
+          type: string
+          pattern: '^.*?$'
+          example: "#U5678" 
+          minLength: 3
+          maxLength: 16
+        file: 
+            description: file
+            type: string
+            format: binary
+            minLength: 1
+            maxLength: 9999
+        date:
+          description: Registration date.
+          type: string
+          format: date-time
+          example: "2022-11-02T09:00:00Z"
+          minLength: 3
+          maxLength: 9999
+        likeCount:
+          description: photo likes count.
+          type: integer
+          example: 0
+          minimum: 0
+          maximum: 9999
+        commentCount:
+          description: photo comments count.
+          type: integer
+          example: 0
+          minimum: 0
+          maximum: 9999
+        likeStatus:
+          description: photo like status.
+          type: boolean
+          example: true      
+  
+    comment:
+      title: Comment
+      type: object
+      description: comment schema.
+      properties:
+        content:
+          description: content
+          type: string
+          example: Hello World!
+          pattern: '^.*?$'
+          minLength: 1
+          maxLength: 40  
+  parameters:
+ 
+    username:
       schema:
-        description: String between 3-16 characters
+          description: username schema.
+          type: string
+          pattern: '^.*?$'
+          example: Francescoerrico
+          minLength: 5
+          maxLength: 30
+      name: username
+      in: path
+      required: true
+      description: "**Username** of a WASAPhoto user."
+    
+    photoID:
+      schema:
+        description: photoID schema.
         type: string
         pattern: '^.*?$'
-        example: Francesco02
+        example: "#P1234"
         minLength: 3
         maxLength: 16
-        readOnly: true  
+      name: photoId 
+      in: path
+      required: true
+      description: "**photoID** of a specific photo on a user profile."
+    
+    commentID:
+      schema:
+        description: commentID schema.
+        type: string
+        pattern: '^.*?$'
+        example: "#C1234"
+        minLength: 3
+        maxLength: 16
+      name: commentId
+      in: path
+      required: true
+      description: "**commentID** of a single comment under a photo."
 
-    photo_id:
-      name: photo_id
-      in: path
-      description: A photo unique identifier
-      required: true
-      schema: 
-        description: Int64 between 0-9999
-        type: integer
-        format: int64
-        minimum: 0
-        maximum: 9999
-        example : 999
-        readOnly: true
-     
-    comment_id:
-      name: comment_id
-      in: path
-      description: A comment unique identifier
-      required: true
+    likeID:
       schema:
-        $ref: "#/components/schemas/comment_identifier/properties/comment_id"
-      example: 200
-       
-    follower_id:
-      name: follower_id
+        description: likeID schema.
+        type: string
+        pattern: '^.*?$'
+        example: "#L1234"
+        minLength: 3
+        maxLength: 16
+      name: likeId
       in: path
-      description: A follower's unique identifier. It's exactly his *identifier*
       required: true
-      schema: 
-        $ref: "#/components/schemas/user_nickname/properties/nickname"
-      example: "Sofia"
-     
-    like_id:
-      name: like_id
-      in: path
-      description: A like unique identifier. It's exactly the *identifier* of the user that liked the photo
-      required: true
-      schema: 
-        $ref: "#/components/schemas/user_nickname/properties/nickname"
-      example: "AndreaC"
-       
-    banned_user_id:
-      name: banned_user_id
-      in: path
-      description: A banned user unique identifier. It's exactly the *identifier* of the user
-      required: true
+      description: "**likeID** of a single comment under a photo."
+
+    followID:
       schema:
-        $ref: "#/components/schemas/user_nickname/properties/nickname"
-      example: "Killer"
-      
+        description: followID schema.
+        type: string
+        pattern: '^.*?$'
+        example: "#F1234"
+        minLength: 3
+        maxLength: 16
+      name: followId
+      in: path
+      required: true
+      description: "**followID** of a single comment under a photo."
+
+    banID:
+      schema:
+        description: banID schema.
+        type: string
+        pattern: '^.*?$'
+        example: "#B1234"
+        minLength: 3
+        maxLength: 16
+      name: banId
+      in: path
+      required: true
+      description: "**banID** of a single comment under a photo."
+
     query_id:
       name: id
       in: query
@@ -506,305 +1055,5 @@ components:
         pattern: '^.*?$'
         minLength: 3
         maxLength: 16
-        example: "Franco99"
-      example: "Francesco02"
-#Schemas
-  schemas:
-
-    user_nickname:
-      description: It's a user's nickname
-      type: object
-      properties:
-        nickname:
-          description: Any string between 3-16 characters
-          type: string
-          minLength: 3
-          maxLength: 16
-          pattern: '^.*?$'
-          example: "FrancescoErrico"
-      example:
-        nickname: "Francescoe02"
-  
-    complete_user:
-      description: Contains both *unique identifier and nickname of a user
-      type: object
-      properties:
-        user_id:
-          $ref: "#/components/schemas/user_nickname/properties/nickname"
-        nickname:
-          $ref: "#/components/schemas/user_nickname/properties/nickname"
-      example:
-        user_id: "FrancescoErrico"
-        nickname: "Francescoe02"
-
-    comment_identifier:
-      description: It's a comment *unique* id
-      type: object
-      properties:
-        comment_id:
-          description: Any number between 0-9999
-          type: integer
-          format: int64
-          minimum: 0
-          maximum: 9999
-          readOnly: true
-          example: 965
-      example:
-        comment_id: 965
-        
-    comment:
-      description: A user's comment contains the text of the comment and the *identifier* of who commented
-      type: object
-      properties:
-        user_id: 
-          $ref: "#/components/schemas/user_nickname/properties/nickname"
-        nickname: 
-          $ref: "#/components/schemas/user_nickname/properties/nickname"
-        comment:
-          type: string
-          minLength: 1
-          maxLength: 30
-          pattern: '^.*?$'
-          example: It's Beautiful
-          description: String value of the comment
-        comment_id:
-          $ref: "#/components/schemas/comment_identifier/properties/comment_id"
-      example:
-        user_id: "Sofia2002"
-        nickname: "sofi"
-        photo_id: 873
-        comment: "Wow che foto spectacularesss"    
-        comment_id: 16
-
-    raw_photo:
-      description: Image content
-      type: object
-      properties:
-        photo_data:
-          description: "Raw data of the photo"
-          type: string
-          minLength: 0
-          maxLength: 100
-          format: binary
-          example: "010110010"
-      example: 
-        photo_data: "010110010"
-
-    photo:
-      description: Contains the essential info of a photo
-      type: object
-      properties:
-        comments:
-          description: Array of comments of a photo
-          type: array
-          minItems: 0
-          maxItems: 9999
-          items:
-            $ref: "#/components/schemas/comment"
-          example:
-            - comments:
-              - user_id: "Alessio"
-                nickname: "Ale46"
-                photo_id: 3821
-                comment: "bella foto!"
-                comment_id: 23
-        likes:
-          description:  Array of users that liked a photo
-          type: array
-          minItems: 0
-          maxItems: 9999
-          items:
-            $ref: "#/components/schemas/complete_user"
-          example: 
-            -  user_id: "FrancescoSnorfia"
-               nickname: "Franco33"
-            -  user_id: "Enzo44"
-               nickname: "kami"
-        date:
-          description: Date and time of upload.
-          type: string
-          format: date-time
-          example: 2017-07-21T17:32:28Z
-          readOnly: true
-        photo_id:
-          $ref: "#/components/schemas/comment_identifier/properties/comment_id"
-        owner:
-          $ref: "#/components/schemas/user_nickname/properties/nickname"
-      example: 
-        comments:
-          - user_id: "Alessio"
-            nickname: "Ale46"
-            photo_id: 3821
-            comment: "bella foto!"
-            comment_id: 99
-        likes:
-          - user_id: "Alessio"
-            nickname: "Ale46"
-        date: 2017-07-21T17:32:28Z
-        photo_id: 3821
-        owner: "Mariucc"
-     
-    photos:
-      description: Represents a list of photos
-      type: object
-      properties:
-        photos_list:
-          description: List of photos
-          type: array
-          minItems: 0
-          maxItems: 10
-          items:
-            $ref: "#/components/schemas/photo"
-          example:
-            - comments:
-                - user_id: "Donato"
-                  nickname: "Dona99"
-                  photo_id: 8321
-                  comment: "wow, nice"
-                  comment_id: 7
-                - user_id: "Vittorio"
-                  nickname: "Vittorio66"
-                  photo_id: 8321
-                  comment: "impossible!"
-                  comment_id: 76
-            - likes:
-              - user_id: "Donato"
-                nickname: "Dona"
-              - user_id: "Vittorio"
-                nickname: "Vittorio66"
-              date: 2017-07-21T17:32:28Z
-              photo_id: 8321
-              owner: "Sofia2002"
-              
-            - comments:
-                - user_id: "Sofia"
-                  nickname: "Sofia2002"
-                  photo_id: 7836
-                  comment: "bellissimo"
-                  comment_id: 44
-                - user_id: "Enzo"
-                  nickname: "kami"
-                  photo_id: 7836
-                  comment: "grande bro"
-                  comment_id: 912
-            - likes:
-              - user_id: "Francesco"
-                nickname: "Francesco02"
-              - user_id: "Ernesto"
-                nickname: "pistola33"
-              - user_id: "Vittorio"
-                nickname: "Vittorio66"
-              date: 2022-11-22T13:10:14Z
-              photo_id: 7836
-              owner: "Francescoe02"
-    
-    users_list:
-      description: List of users found
-      type: object
-      properties:
-        users:
-          description: Array of users with a partial match on the searched nickname
-          type: array
-          minItems: 0
-          maxItems: 10
-          items:
-            $ref: "#/components/schemas/complete_user"
-          example:
-            - user_id: Wario21
-              nickname: marietto21
-            - user_id: Watermelon
-              nickname: cocomeros
-            - user_id: WaveBruh
-              nickname: ondaBro
-            - user_id: WantedMan66
-              nickname: uomoRicercato
-
-    complete_profile:
-          description: Object containing all the profile info
-          type: object
-          properties:
-          
-            user_id:
-              $ref: "#/components/schemas/user_nickname/properties/nickname"
-              
-            nickname:
-              $ref: "#/components/schemas/user_nickname/properties/nickname"
-              
-            followers:
-              description: Array of followers
-              type: array
-              minItems: 0
-              maxItems: 99
-              items:
-                $ref: "#/components/schemas/complete_user"
-              example:
-                - user_id: "Wario21"
-                  nickname: "warietto21"
-                - user_id: "giulio"
-                  nickname: "Milioo"
-
-            following:
-              description: Array of followed users
-              type: array
-              minItems: 0
-              maxItems: 99
-              items:
-                $ref: "#/components/schemas/complete_user"
-              example:
-                - user_id: "giulio"
-                  nickname: "Milioo"
-                
-            photos:
-              description: Array of photos
-              type: array
-              minItems: 0
-              maxItems: 10
-              items:
-                $ref: "#/components/schemas/photo"
-              example:
-                - comments:
-                  - user_id: "sfera"
-                    nickname: "noNo"
-                    comment: "bella li"
-                    comment_id: 104
-                  - user_id: "tiziano"
-                    nickname: "ferroZ68"
-                    comment: "spaccaaa"
-                    comment_id: 99
-                - likes:
-                  - user_id: "sfera"
-                    nickname: "noNo"
-                  - user_id: "tiziano"
-                    nickname: "ferroZ68"
-                  - user_id: "raffaello"
-                    nickname: "raffaello99"
-                    
-                  date: 2022-11-22T13:10:14Z
-                  photo_id: 7836
-                  owner: "PulpFiction"
-         
-    user_login:
-      description: Identifier sent by user during the login
-      type: object
-      properties:
-        identifier:
-          $ref: "#/components/schemas/user_nickname/properties/nickname"
-         
-    login_return:
-      description: Identifier returned after the login
-      type: object
-      properties:
-        identifier:
-          $ref: "#/components/schemas/user_nickname/properties/nickname"
-    comment_added:
-      description: Comment has been added successfully. Returns the comment *unique* identifier
-      type: object
-      properties:
-        identifier:
-             $ref: "#/components/schemas/comment_identifier"          
-    photo_uploaded:
-      description: photo has been uploaded successfully. Returns the *unique* id of the posted photo
-      type: object
-      properties:
-        identifier:
-            $ref: "#/components/schemas/photo"
+        example: "Luis64"
+      example: "luigi64"
