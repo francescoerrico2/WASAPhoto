@@ -46,7 +46,10 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/user" 
-  /user/{username}/setusername:
+      security:
+      - bearerAuth : []
+
+  /users/{username}/setusername:
     parameters:
       - $ref: "#/components/parameters/username"
     put: 
@@ -75,7 +78,7 @@ paths:
         "401": { $ref: "#/components/responses/UnauthorizedError" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   
-  /user/{username}/stream:
+  /users/{username}/stream:
     parameters:
       - $ref: "#/components/parameters/username"
     get:
@@ -128,46 +131,23 @@ paths:
       tags: ["search"]
       summary: Get user profile information.
       operationId: getUserProfile
+      description: |-
+        search an user.
+      security:
+      - bearerAuth : []
       parameters:
         - $ref: "#/components/parameters/query_id"
       responses:
-        '200':
-          description: User profile retrieved successfully.
+        "200": 
+          description: User profile retrived.
           content:
             application/json:
-              example:
-                userId: "192839"
-                username: "Mario_Rossi"
-                photos:
-                  - photosId: "001"
-                    uploadDataTime: "2023-01-01T00:00:01Z"
-                    likes: 10
-                    comments: 3
-                  - photosId: "002"
-                    uploadDataTime: "2023-03-03T09:00:01Z"
-                    likes: 3
-                    comments: 0
-                totalPhotos: 2
-                followers: 15
-                following: 2  
-        '400':
-          description: Bad request. Invalid input or missing required parameters.
-          content:
-            application/json:
-              example:
-                error: Bad request. Invalid input or missing required parameters.
-        '404':
-          description: User not found.
-          content:
-            application/json:
-              example:
-                error: User not found.
-        '500':
-          description: Internal Server Error.
-          content:
-            application/json:
-              example:
-                error: Internal Server Error.
+              schema: 
+                $ref: "#/components/schemas/userlist"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedError" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+
 
 
   /users/{username}/ban/{banId}:
@@ -520,7 +500,36 @@ components:
           example: Francescoerrico
           minLength: 3
           maxLength: 16
-  
+
+    userlist:
+      description: List of users found
+      type: object
+      properties:
+        users:
+          description: Array of users with a partial match on the searched nickname
+          type: array
+          minItems: 0
+          maxItems: 10
+          items:
+            $ref: "#/components/schemas/completeuser"
+          example:
+            - user_id: Francesco02
+              username: franco
+            - user_id: Sofia2002
+              username: Sophi
+
+    completeuser:
+      description: Contains both *unique identifier and nickname of a user
+      type: object
+      properties:
+        user_id:
+          $ref: "#/components/schemas/user/properties/identifier"
+        username:
+          $ref: "#/components/schemas/user/properties/username"
+      example:
+        user_id: "FrancescoErrico"
+        nickname: "Francescoe02"
+
     profile:
       title: Profile
       description: Profile schema.
