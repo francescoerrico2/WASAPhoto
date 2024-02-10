@@ -2,7 +2,7 @@ package database
 
 func (db *appdbimpl) SearchUser(searcher User, userToSearch User) ([]CompleteUser, error) {
 
-	rows, err := db.c.Query("SELECT * FROM users WHERE ((id_user LIKE ?) OR (nickname LIKE ?)) AND id_user NOT IN (SELECT banner FROM banned_users WHERE banned = ?)",
+	rows, err := db.c.Query("SELECT * FROM users WHERE ((id_user LIKE ?) OR (Username LIKE ?)) AND id_user NOT IN (SELECT banner FROM banned_users WHERE banned = ?)",
 		userToSearch.IdUser+"%", userToSearch.IdUser+"%", searcher.IdUser)
 	if err != nil {
 		return nil, err
@@ -12,7 +12,7 @@ func (db *appdbimpl) SearchUser(searcher User, userToSearch User) ([]CompleteUse
 	var res []CompleteUser
 	for rows.Next() {
 		var user CompleteUser
-		err = rows.Scan(&user.IdUser, &user.Nickname)
+		err = rows.Scan(&user.IdUser, &user.Username)
 		if err != nil {
 			return nil, err
 		}

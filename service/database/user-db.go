@@ -29,7 +29,7 @@ func (db *appdbimpl) GetStream(user User) ([]Photo, error) {
 
 func (db *appdbimpl) CreateUser(u User) error {
 
-	_, err := db.c.Exec("INSERT INTO users (id_user,nickname) VALUES (?, ?)",
+	_, err := db.c.Exec("INSERT INTO users (id_user,username) VALUES (?, ?)",
 		u.IdUser, u.IdUser)
 
 	if err != nil {

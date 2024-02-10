@@ -3,7 +3,7 @@ info:
   title: WASAphoto API
   description: |
     This is the API for WASAphoto made by 1982048
-  version: 1.0.0
+  version: 0.0.1
 
 tags: 
   - name: "login"

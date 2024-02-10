@@ -16,11 +16,11 @@ func (db *appdbimpl) GetLikesList(requestingUser User, requestedUser User, photo
 		if err != nil {
 			return nil, err
 		}
-		nickname, err := db.GetNickname(User{IdUser: user.IdUser})
+		username, err := db.GetUsername(User{IdUser: user.IdUser})
 		if err != nil {
 			return nil, err
 		}
-		user.Nickname = nickname
+		user.Username = username
 
 		likes = append(likes, user)
 	}

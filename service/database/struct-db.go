@@ -16,13 +16,13 @@ type User struct {
 
 type CompleteUser struct {
 	IdUser   string `json:"user_id"`
-	Nickname string `json:"nickname"`
+	Username string `json:"Username"`
 }
 type PhotoId struct {
 	IdPhoto int64 `json:"photo_id"`
 }
-type Nickname struct {
-	Nickname string `json:"nickname"`
+type Username struct {
+	Username string `json:"username"`
 }
 
 type Comment struct {
@@ -37,6 +37,6 @@ type CompleteComment struct {
 	IdComment int64  `json:"comment_id"`
 	IdPhoto   int64  `json:"photo_id"`
 	IdUser    string `json:"user_id"`
-	Nickname  string `json:"nickname"`
+	Username  string `json:"username"`
 	Comment   string `json:"comment"`
 }

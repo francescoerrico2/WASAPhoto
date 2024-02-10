@@ -14,7 +14,7 @@ const PhotosPerUserHome = 3
 type AppDatabase interface {
 	CreateUser(User) error
 
-	ModifyNickname(User, Nickname) error
+	ModifyUsername(User, Username) error
 
 	SearchUser(searcher User, userToSearch User) ([]CompleteUser, error)
 
@@ -48,7 +48,7 @@ type AppDatabase interface {
 
 	UncommentPhotoAuthor(PhotoId, CommentId) error
 
-	GetNickname(User) (string, error)
+	GetUsername(User) (string, error)
 
 	BannedUserCheck(a User, b User) (bool, error)
 
@@ -93,7 +93,7 @@ func createDatabase(db *sql.DB) error {
 	tables := [6]string{
 		`CREATE TABLE IF NOT EXISTS users (
 			id_user VARCHAR(16) NOT NULL PRIMARY KEY,
-			nickname VARCHAR(16) NOT NULL
+			username VARCHAR(16) NOT NULL
 			);`,
 		`CREATE TABLE IF NOT EXISTS photos (
 			id_photo INTEGER PRIMARY KEY AUTOINCREMENT,
