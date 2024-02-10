@@ -34,8 +34,8 @@ type PhotoId struct {
 	IdPhoto int64 `json:"photo_id"`
 }
 
-type Nickname struct {
-	Nickname string `json:"Nickname"`
+type Username struct {
+	Username string `json:"Username"`
 }
 
 type Comment struct {
@@ -50,13 +50,13 @@ type CompleteComment struct {
 	IdComment int64  `json:"comment_id"`
 	IdPhoto   int64  `json:"photo_id"`
 	IdUser    string `json:"user_id"`
-	Nickname  string `json:"nickname"`
+	Username  string `json:"username"`
 	Comment   string `json:"comment"`
 }
 
 type Profile struct {
 	Name      string           `json:"user_id"`
-	Nickname  string           `json:"nickname"`
+	Username  string           `json:"username"`
 	Followers []database.User  `json:"followers"`
 	Following []database.User  `json:"following"`
 	Posts     []database.Photo `json:"posts"`
@@ -82,8 +82,8 @@ func (p PhotoId) ToDatabase() database.PhotoId {
 	}
 }
 
-func (n Nickname) ToDatabase() database.Nickname {
-	return database.Nickname{Nickname: n.Nickname}
+func (u Username) ToDatabase() database.Username {
+	return database.Username{Username: u.Username}
 }
 
 func (c Comment) ToDatabase() database.Comment {

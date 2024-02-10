@@ -106,9 +106,9 @@ func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	nickname, err := rt.db.GetNickname(User{IdUser: requestedUser}.ToDatabase())
+	username, err := rt.db.GetUsername(User{IdUser: requestedUser}.ToDatabase())
 	if err != nil {
-		ctx.Logger.WithError(err).Error("getUserProfile/db.GetNickname: error executing query")
+		ctx.Logger.WithError(err).Error("getUserProfile/db.GetUsername: error executing query")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -116,7 +116,7 @@ func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprou
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(Profile{
 		Name:      requestedUser,
-		Nickname:  nickname,
+		Username:  username,
 		Followers: followers,
 		Following: following,
 		Posts:     photos,
@@ -131,18 +131,18 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps http
 		w.WriteHeader(valid)
 		return
 	}
-	var nick Nickname
-	err := json.NewDecoder(r.Body).Decode(&nick)
+	var usern Username
+	err := json.NewDecoder(r.Body).Decode(&usern)
 	if err != nil {
-		ctx.Logger.WithError(err).Error("update-nickname: error decoding json")
+		ctx.Logger.WithError(err).Error("update-username: error decoding json")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	err = rt.db.ModifyNickname(
+	err = rt.db.ModifyUsername(
 		User{IdUser: pathId}.ToDatabase(),
-		nick.ToDatabase())
+		usern.ToDatabase())
 	if err != nil {
-		ctx.Logger.WithError(err).Error("update-nickname: error executing update query")
+		ctx.Logger.WithError(err).Error("update-username: error executing update query")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
