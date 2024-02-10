@@ -59,7 +59,7 @@ export default {
 		<UserMiniCard v-for="(user,index) in users" 
 		:key="index"
 		:identifier="user.user_id" 
-		:nickname="user.nickname" 
+		:username="user.username" 
 		@clickedUser="goToProfile"/>
 
 		<p v-if="users.length == 0" class="no-result-text d-flex justify-content-center"> No users found.</p>

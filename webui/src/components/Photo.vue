@@ -42,7 +42,7 @@ export default {
 					await this.$axios.put("/users/"+ this.owner +"/photos/"+this.photo_id+"/likes/"+ bearer)
 					this.allLikes.push({
 						user_id: bearer,
-						nickname: bearer
+						username: bearer
 					})
 
 				}else{

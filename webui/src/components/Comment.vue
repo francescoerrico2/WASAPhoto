@@ -57,7 +57,7 @@ export default {
                     <PhotoComment v-for="(comm,index) in comments_list" 
 					:key="index" 
 					:author="comm.user_id" 
-					:nickname="comm.nickname"
+					:username="comm.usernmae"
 					:comment_id="comm.comment_id"
 					:photo_id="comm.photo_id"
 					:content="comm.comment"

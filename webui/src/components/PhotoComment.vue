@@ -5,7 +5,7 @@ export default {
             user: "",
         }
     },
-	props: ['content','author','photo_owner','comment_id','photo_id','nickname'],
+	props: ['content','author','photo_owner','comment_id','photo_id','username'],
 
     methods:{
         async deleteComment(){
@@ -33,7 +33,7 @@ export default {
         <hr>
         <div class="row">
             <div class="col-10">
-                <h5>{{nickname}} @{{author}}</h5>
+                <h5>{{username}} @{{author}}</h5>
             </div>
 
             <div class="col-2">

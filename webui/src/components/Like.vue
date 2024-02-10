@@ -18,7 +18,7 @@ export default {
 			<UserMiniCard v-for="(user,index) in likes" 
 			:key="index" 
 			:identifier="user.user_id"
-			:nickname="user.nickname"
+			:username="user.username"
 			/>
 		</div>
 		</div>

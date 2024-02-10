@@ -7,7 +7,7 @@ export default {
 			userExists: false,
 			banStatus: false,
 
-            nickname: "",
+            username: "",
 
 
 			followStatus: false,
@@ -116,7 +116,7 @@ export default {
 					this.userExists = false
 				}
 				
-                this.nickname = response.data.nickname
+                this.username = response.data.username
 				this.followerCnt = response.data.followers != null ? response.data.followers.length : 0
 				this.followingCnt = response.data.following != null? response.data.following.length : 0
 				this.postCnt = response.data.posts != null ? response.data.posts.length : 0
@@ -157,7 +157,7 @@ export default {
                     <div class="row">
                         <div class="col">
                             <div class="card-body d-flex justify-content-between align-items-center">
-                                <h5 class="card-title p-0 me-auto mt-auto">{{nickname}} @{{this.$route.params.id}}</h5>
+                                <h5 class="card-title p-0 me-auto mt-auto">{{username}} @{{this.$route.params.id}}</h5>
 
                                 <button v-if="!sameUser && !banStatus" @click="followClick" class="btn btn-success ms-2">
                                     {{followStatus ? "Unfollow" : "Follow"}}

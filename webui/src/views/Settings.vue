@@ -3,18 +3,18 @@ export default {
 	data: function () {
 		return {
 			errormsg: null,
-			nickname: "",
+			username: "",
 		}
 	},
 
 	methods:{
-		async modifyNickname(){
+		async modifyUsername(){
 			try{
 				let resp = await this.$axios.put("/users/"+this.$route.params.id,{
-					nickname: this.nickname,
+					username: this.username,
 				})
 
-				this.nickname=""
+				this.username=""
 			}catch (e){
 				this.errormsg = e.toString();
 			}
@@ -45,15 +45,15 @@ export default {
 					<input
 						type="text"
 						class="form-control w-25"
-						placeholder="Your new nickname..."
+						placeholder="Your new username..."
 						maxlength="16"
 						minlength="3"
-						v-model="nickname"
+						v-model="username"
 					/>
 					<div class="input-group-append">
 						<button class="btn btn-outline-secondary" 
-						@click="modifyNickname"
-						:disabled="nickname === null || nickname.length >16 || nickname.length <3 || nickname.trim().length===0">
+						@click="modifyUsername"
+						:disabled="username === null || username.length >16 || username.length <3 || username.trim().length===0">
 						Modify</button>
 					</div>
 				</div>
@@ -61,8 +61,8 @@ export default {
 		</div>
 
 		<div class="row" >
-			<div v-if="nickname.trim().length>0" class="col d-flex justify-content-center">
-				Preview: {{nickname}} @{{ this.$route.params.id }}
+			<div v-if="username.trim().length>0" class="col d-flex justify-content-center">
+				Preview: {{username}} @{{ this.$route.params.id }}
 			</div>
 		</div>
 

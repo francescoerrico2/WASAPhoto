@@ -1,6 +1,6 @@
 <script>
 export default {
-	props: ['identifier','nickname'],
+	props: ['identifier','username'],
 
     methods:{
 
@@ -17,7 +17,7 @@ export default {
         <div class="col d-flex justify-content-center">
             <div class="user-mini-card card bg-transparent border-start">
                 <div class="card-body">
-                    <h5 @click="clickedUser" class="user-mini-card-title d-flex justify-content-center ">{{nickname }} @{{identifier }}</h5>
+                    <h5 @click="clickedUser" class="user-mini-card-title d-flex justify-content-center ">{{username }} @{{identifier }}</h5>
                 </div>
             </div>
         </div>
